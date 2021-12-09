@@ -4,7 +4,7 @@
 
 #### A performant zoomable image written in Reanimated v2 🚀
 
-![React Native Image Zoom](./demo.gif)
+![React Native Image Zoom](https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/demo.gif)
 >Photo by [Walling](https://unsplash.com/photos/XLqiL-rz4V8) on [Unsplash](https://unsplash.com/)
 
 ---

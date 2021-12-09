@@ -1,6 +1,6 @@
 {
   "name": "@likashefqet/react-native-image-zoom",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A performant zoomable image written in Reanimated v2 🚀",
   "main": "src/index.ts",
   "module": "src/index.ts",

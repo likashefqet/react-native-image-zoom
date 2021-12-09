@@ -1,9 +1,9 @@
 .circleci
 .husky
 example
+lib
 node_modules
 scripts
-src
 .editorconfig
 .gitattributes
 .gitignore

@@ -1,10 +1,10 @@
 # React Native Image Zoom
 
-[![Reanimated](https://img.shields.io/badge/Reanimated-v2-blue&style=flat)](https://github.com/likashefqet/react-native-image-zoom) [![npm](https://img.shields.io/github/license/likashefqet/react-native-image-zoom?label=licence)](https://github.com/likashefqet/react-native-image-zoom) [![npm](https://img.shields.io/badge/types-included-blue?style=flat)](https://github.com/likashefqet/react-native-image-zoom)
+[![Reanimated](https://img.shields.io/badge/Reanimated-v2-blue)](https://github.com/likashefqet/react-native-image-zoom) [![npm](https://img.shields.io/github/license/likashefqet/react-native-image-zoom)](https://github.com/likashefqet/react-native-image-zoom) [![npm](https://img.shields.io/badge/types-included-blue)](https://github.com/likashefqet/react-native-image-zoom)
 
 #### A performant zoomable image written in Reanimated v2 🚀
 
-![React Native Image Zoom](./Assets/demo.gif)
+![React Native Image Zoom](./demo.gif)
 >Photo by [Walling](https://unsplash.com/photos/XLqiL-rz4V8) on [Unsplash](https://unsplash.com/)
 
 ---

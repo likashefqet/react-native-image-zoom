@@ -31,6 +31,13 @@ function App() {
           color: 'white',
           style: styles.loader,
         }}
+        onInteractionStart={() => console.log('onInteractionStart')}
+        onInteractionEnd={() => console.log('onInteractionEnd')}
+        onPanStart={() => console.log('onPanStart')}
+        onPanEnd={() => console.log('onPanEnd')}
+        onPinchStart={() => console.log('onPinchStart')}
+        onPinchEnd={() => console.log('onPinchEnd')}
+        minScale={0.6}
       />
     </>
   );

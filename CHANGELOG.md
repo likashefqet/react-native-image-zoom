@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.1](https://github.com/likashefqet/react-native-image-zoom/compare/v1.2.0...v1.2.1) (2021-12-27)
+
+### Enhanced
+
+- Adds interaction controllers and callbacks
+  - minPanPointers (default: 2)
+  - maxPanPointers (default: 2)
+  - isPanEnabled (default: true)
+  - isPinchEnabled (default: true)
+  - onInteractionStart (default: noop)
+  - onInteractionEnd (default: noop)
+  - onPinchStart (default: noop)
+  - onPinchEnd (default: noop)
+  - onPanStart (default: noop)
+  - onPanEnd (default: noop)
+- Upgrade React Native version to 0.66.4 on the example.
+
 ## [1.2.0](https://github.com/likashefqet/react-native-image-zoom/compare/v1.1.2...v1.2.0) (2021-12-09)
 
 ### Enhanced

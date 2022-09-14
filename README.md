@@ -44,16 +44,25 @@ Basics:
 ## Properties
 All `React Native Image Props` &
 
-| Property | Type | Default | Description |
-|-----------------|----------|-------|--------------------------------------------------------------|
-| uri | String | `''` (empty string) | Image uri. Can be overridden by source prop. |
-| minScale | Number | `1` | The minimum allowed zoom scale. |
-| maxScale | Number | `5` | The maximum allowed zoom scale.|
-| containerStyle | Object | `{}` | Style object to be applied to the container. |
-| imageContainerStyle | Object | `{}` | Style object to be applied to the image container. |
-| activityIndicatorProps | Object | `{}` | Activity Indicator Props to customize the default loader. |
-| renderLoader | Function | `undefined` | Function that renders a custom loading component. Render `null` to disable loader. |
-
+| Property               | Type     | Default             | Description                                                                                |
+| ---------------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------ |
+| uri                    | String   | `''` (empty string) | Image uri. Can be overridden by source prop.                                               |
+| minScale               | Number   | `1`                 | The minimum allowed zoom scale.                                                            |
+| maxScale               | Number   | `5`                 | The maximum allowed zoom scale.                                                            |
+| containerStyle         | Object   | `{}`                | Style object to be applied to the container.                                               |
+| imageContainerStyle    | Object   | `{}`                | Style object to be applied to the image container.                                         |
+| activityIndicatorProps | Object   | `{}`                | Activity Indicator Props to customize the default loader.                                  |
+| minPanPointers         | Number   | `2`                 | Minimum pointers to enable pan gesture.                                                    |
+| maxPanPointers         | Number   | `2`                 | Minimum pointers to enable pan gesture.                                                    |
+| isPanEnabled           | Boolean  | `true`              | Determines if pan gesture should be enabled within the limits of min and max pan pointers. |
+| isPinchEnabled         | Boolean  | `true`              | Determines if pinch gesture should be enabled.                                             |
+| renderLoader           | Function | `undefined`         | Function that renders a custom loading component. Render `null` to disable loader.         |
+| onInteractionStart     | Function | `undefined`         | Callback to trigger when the image interaction starts.                                     |
+| onInteractionEnd       | Function | `undefined`         | Callback to trigger when the image interaction ends.                                       |
+| onPinchStart           | Function | `undefined`         | Callback to trigger when the image pinching starts.                                        |
+| onPinchEnd             | Function | `undefined`         | Callback to trigger when the image pinching ends.                                          |
+| onPanStart             | Function | `undefined`         | Callback to trigger when the image panning starts.                                         |
+| onPanEnd               | Function | `undefined`         | Callback to trigger when the image panning ends.                                           |
 
 ## Changelog
 

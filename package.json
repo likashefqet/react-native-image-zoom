@@ -4,7 +4,7 @@
   "description": "A performant zoomable image written in Reanimated v2 🚀",
   "main": "src/index.ts",
   "module": "src/index.ts",
-  "types": "src/components/index.d.ts",
+  "types": "src/components/types.d.ts",
   "scripts": {
     "test": "jest",
     "typescript": "tsc --noEmit",

@@ -62,6 +62,7 @@ export default function ImageZoom({
   imageContainerStyle = {},
   activityIndicatorProps = {},
   renderLoader,
+  resetZoomOnGestureEnd = true,
   ...props
 }: ImageZoomProps) {
   const panRef = useRef();
@@ -132,8 +133,10 @@ export default function ImageZoom({
       translateY.value = event.translationY;
     },
     onFinish: () => {
-      translateX.value = withTiming(0);
-      translateY.value = withTiming(0);
+      if (resetZoomOnGestureEnd) {
+        translateX.value = withTiming(0);
+        translateY.value = withTiming(0);
+      }
     },
   });
 
@@ -154,11 +157,13 @@ export default function ImageZoom({
         focalY.value = (centerY - initialFocalY.value) * (scale.value - 1);
       },
       onFinish: () => {
-        scale.value = withTiming(1);
-        focalX.value = withTiming(0);
-        focalY.value = withTiming(0);
-        initialFocalX.value = 0;
-        initialFocalY.value = 0;
+        if (resetZoomOnGestureEnd) {
+          scale.value = withTiming(1);
+          focalX.value = withTiming(0);
+          focalY.value = withTiming(0);
+          initialFocalX.value = 0;
+          initialFocalY.value = 0;
+        }
       },
     });
 

@@ -63,7 +63,6 @@ export default function ImageZoom({
   activityIndicatorProps = {},
   renderLoader,
   resetZoomOnGestureEnd = true,
-  resetZoom = noop,
   ...props
 }: ImageZoomProps) {
   const panRef = useRef();

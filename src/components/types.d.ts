@@ -100,4 +100,8 @@ export type ImageZoomProps = {
    * Render custom loader component.
    */
   renderLoader?: Function;
+    /**
+   * Reset zoom and snap back to initial position on gesture end.
+   */
+  resetZoomOnGestureEnd?: boolean
 };

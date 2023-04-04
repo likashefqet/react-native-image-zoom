@@ -53,7 +53,7 @@ All `React Native Image Props` &
 | imageContainerStyle | Object | `{}` | Style object to be applied to the image container. |
 | activityIndicatorProps | Object | `{}` | Activity Indicator Props to customize the default loader. |
 | renderLoader | Function | `undefined` | Function that renders a custom loading component. Render `null` to disable loader. |
-
+| resetZoomOnGestureEnd | boolean | true | Reset zoom and snap back to initial position on gesture end. |
 
 ## Changelog
 

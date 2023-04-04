@@ -127,16 +127,6 @@ export default function ImageZoom({
     onPanEnd();
     onInteractionEnded();
   };
-  
-  const resetZoom = () => {
-    translateX.value = withTiming(0);
-    translateY.value = withTiming(0);
-    scale.value = withTiming(1);
-    focalX.value = withTiming(0);
-    focalY.value = withTiming(0);
-    initialFocalX.value = 0;
-    initialFocalY.value = 0;
-  };
 
   const panHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onActive: (event: PanGestureHandlerEventPayload) => {

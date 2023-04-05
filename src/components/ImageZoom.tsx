@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ImageZoom  = forwardRef(function ImageZoom({
+const ImageZoom  = forwardRef(({
   uri = '',
   minScale = 1,
   maxScale = 5,
@@ -65,8 +65,8 @@ const ImageZoom  = forwardRef(function ImageZoom({
   renderLoader,
   resetZoomOnGestureEnd = true,
   ...props
-}: ImageZoomProps, ref) {
-    
+}: ImageZoomProps, ref) => {
+
   useImperativeHandle(ref, () => ({
     resetZoom: () => {
         resetZoom();

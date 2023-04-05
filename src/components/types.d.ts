@@ -1,17 +1,11 @@
-import type { MutableRefObject } from 'react';
 import type {
   ActivityIndicatorProps,
   ImageStyle,
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import type ImageZoom from './ImageZoom'
 
 export type ImageZoomProps = {
-  /**
-   * A React reference to the ImageZoom component
-   */  
-  ref?: MutableRefObject<typeof ImageZoom>;
   /**
    * Uri of the image.
    * @default ''

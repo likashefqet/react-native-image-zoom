@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
+
 import {
   ActivityIndicator,
   Image,
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function ImageZoom({
+const ImageZoom  = forwardRef(function ImageZoom({
   uri = '',
   minScale = 1,
   maxScale = 5,
@@ -64,7 +65,14 @@ export default function ImageZoom({
   renderLoader,
   resetZoomOnGestureEnd = true,
   ...props
-}: ImageZoomProps) {
+}: ImageZoomProps, ref) {
+    
+  useImperativeHandle(ref, () => ({
+    resetZoom: () => {
+        resetZoom();
+    },
+  }),[]);
+
   const panRef = useRef();
   const pinchRef = useRef();
 
@@ -125,6 +133,16 @@ export default function ImageZoom({
     isPanning.current = false;
     onPanEnd();
     onInteractionEnded();
+  };
+
+  const resetZoom = () => {
+    translateX.value = withTiming(0);
+    translateY.value = withTiming(0);
+    scale.value = withTiming(1);
+    focalX.value = withTiming(0);
+    focalY.value = withTiming(0);
+    initialFocalX.value = 0;
+    initialFocalY.value = 0;
   };
 
   const panHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
@@ -246,4 +264,6 @@ export default function ImageZoom({
       </Animated.View>
     </PinchGestureHandler>
   );
-}
+})
+
+export default ImageZoom;

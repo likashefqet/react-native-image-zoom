@@ -3,9 +3,15 @@ import type {
   ImageStyle,
   StyleProp,
   ViewStyle,
+  ImageProps,
 } from 'react-native';
 
-export type ImageZoomProps = {
+export type ImageZoomProps = Omit<ImageProps, 'source'> && {
+  /**
+   * The image source (either a remote URL or a local file resource).
+   * @default undefined
+   */
+  source?: ImageSourcePropType;
   /**
    * Uri of the image.
    * @default ''
@@ -101,3 +107,5 @@ export type ImageZoomProps = {
    */
   renderLoader?: Function;
 };
+
+export declare class ImageZoom extends React.Component<ImageZoomProps> {}

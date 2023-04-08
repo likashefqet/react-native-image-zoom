@@ -41,11 +41,21 @@ Basics:
 <ImageZoom uri={imageUri} />
 ```
 
+If you want to reset the zoom manually:
+```javascript
+const imageZoomRef = useRef()
+<ImageZoom ref={imageZoomRef} uri={imageUri} resetZoomOnGestureEnd={false} />
+
+Then you can call the resetZoom function manually:
+imageZoomRef.current.resetZoom()
+```
+
 ## Properties
 All `React Native Image Props` &
 
 | Property               | Type     | Default             | Description                                                                                |
 | ---------------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------ |
+| ref | MutableRefObject<typeof ImageZoom> | undefined | A React reference to the ImageZoom component. |
 | uri                    | String   | `''` (empty string) | Image uri. Can be overridden by source prop.                                               |
 | minScale               | Number   | `1`                 | The minimum allowed zoom scale.                                                            |
 | maxScale               | Number   | `5`                 | The maximum allowed zoom scale.                                                            |
@@ -63,6 +73,7 @@ All `React Native Image Props` &
 | onPinchEnd             | Function | `undefined`         | Callback to trigger when the image pinching ends.                                          |
 | onPanStart             | Function | `undefined`         | Callback to trigger when the image panning starts.                                         |
 | onPanEnd               | Function | `undefined`         | Callback to trigger when the image panning ends.                                           |
+| resetZoomOnGestureEnd | boolean | true | Reset zoom and snap back to initial position on gesture end. |
 
 ## Changelog
 

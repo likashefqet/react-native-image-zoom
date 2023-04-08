@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
+
 import {
   ActivityIndicator,
   Image,
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function ImageZoom({
+const ImageZoom  = forwardRef(({
   uri = '',
   minScale = 1,
   maxScale = 5,
@@ -62,8 +63,16 @@ export default function ImageZoom({
   imageContainerStyle = {},
   activityIndicatorProps = {},
   renderLoader,
+  resetZoomOnGestureEnd = true,
   ...props
-}: ImageZoomProps) {
+}: ImageZoomProps, ref) => {
+
+  useImperativeHandle(ref, () => ({
+    resetZoom: () => {
+        resetZoom();
+    },
+  }),[]);
+
   const panRef = useRef();
   const pinchRef = useRef();
 
@@ -126,14 +135,26 @@ export default function ImageZoom({
     onInteractionEnded();
   };
 
+  const resetZoom = () => {
+    translateX.value = withTiming(0);
+    translateY.value = withTiming(0);
+    scale.value = withTiming(1);
+    focalX.value = withTiming(0);
+    focalY.value = withTiming(0);
+    initialFocalX.value = 0;
+    initialFocalY.value = 0;
+  };
+
   const panHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onActive: (event: PanGestureHandlerEventPayload) => {
       translateX.value = event.translationX;
       translateY.value = event.translationY;
     },
     onFinish: () => {
-      translateX.value = withTiming(0);
-      translateY.value = withTiming(0);
+      if (resetZoomOnGestureEnd) {
+        translateX.value = withTiming(0);
+        translateY.value = withTiming(0);
+      }
     },
   });
 
@@ -154,11 +175,13 @@ export default function ImageZoom({
         focalY.value = (centerY - initialFocalY.value) * (scale.value - 1);
       },
       onFinish: () => {
-        scale.value = withTiming(1);
-        focalX.value = withTiming(0);
-        focalY.value = withTiming(0);
-        initialFocalX.value = 0;
-        initialFocalY.value = 0;
+        if (resetZoomOnGestureEnd) {
+          scale.value = withTiming(1);
+          focalX.value = withTiming(0);
+          focalY.value = withTiming(0);
+          initialFocalX.value = 0;
+          initialFocalY.value = 0;
+        }
       },
     });
 
@@ -241,4 +264,6 @@ export default function ImageZoom({
       </Animated.View>
     </PinchGestureHandler>
   );
-}
+})
+
+export default ImageZoom;

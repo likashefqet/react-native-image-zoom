@@ -106,6 +106,10 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> && {
    * Render custom loader component.
    */
   renderLoader?: Function;
+    /**
+   * Reset zoom and snap back to initial position on gesture end.
+   */
+  resetZoomOnGestureEnd?: boolean;
 };
 
 export declare class ImageZoom extends React.Component<ImageZoomProps> {}

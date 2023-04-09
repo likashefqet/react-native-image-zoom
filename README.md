@@ -1,98 +1,124 @@
-# React Native Image Zoom
+# REACT NATIVE IMAGE ZOOM
 
-[![Reanimated](https://img.shields.io/badge/Reanimated-v2-blue)](https://github.com/likashefqet/react-native-image-zoom) [![npm](https://img.shields.io/github/license/likashefqet/react-native-image-zoom)](https://github.com/likashefqet/react-native-image-zoom) [![npm](https://img.shields.io/badge/types-included-blue)](https://github.com/likashefqet/react-native-image-zoom)
+![npm](https://img.shields.io/npm/v/@likashefqet/react-native-image-zoom)
+![NPM](https://img.shields.io/npm/l/@likashefqet/react-native-image-zoom)
+![npm peer dependency version](https://img.shields.io/npm/dependency-version/@likashefqet/react-native-image-zoom/peer/react-native-reanimated)
+![npm peer dependency version](https://img.shields.io/npm/dependency-version/@likashefqet/react-native-image-zoom/peer/react-native-gesture-handler)
+![npm bundle size](https://img.shields.io/bundlephobia/min/@likashefqet/react-native-image-zoom)
+[![npm](https://img.shields.io/badge/types-included-blue)](https://github.com/likashefqet/react-native-image-zoom)
+![npms.io (final)](https://img.shields.io/npms-io/maintenance-score/@likashefqet/react-native-image-zoom)
+![GitHub issues](https://img.shields.io/github/issues/likashefqet/react-native-image-zoom)
 
-#### A performant zoomable image written in Reanimated v2 🚀
+**A performant and customizable image zoom component  
+built with Reanimated v2 and TypeScript. 🌃 🚀**
+
+_Demo:_
 
 ![React Native Image Zoom](https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/demo.gif)
->Photo by [Walling](https://unsplash.com/photos/XLqiL-rz4V8) on [Unsplash](https://unsplash.com/)
 
----
+<div dir="rtl">
+Photo by <a href="https://unsplash.com/photos/XLqiL-rz4V8" title="Photo by Walling">Walling</a> on <a href="https://unsplash.com" title="Unsplash">Unsplash</a>
+</div>
 
 ## Features
 
-- Zoom (pinch and/or pan) the image using gestures.
-- Reset zoom and snap back to initial position on gesture end.
-- Smooth gesture interactions & snapping animations.
-- Loading state while image is loading.
-- Customize the default loader.
-- Provide custom loader to override/remove the default one.
-- Configure maximum zoom value.
-- Compatible with `Reanimated v2`.
-- Written in `TypeScript`.
+- **Smooth Zooming Gestures:** Smooth and responsive zooming functionality, allowing users to zoom in and out of images using intuitive pinch and pan gestures.
+- **Customizable Zoom Settings:** With the `minScale` and `maxScale` props, you can set the minimum and maximum zoom levels for your images, giving you precise control over the zooming experience.
+- **Reset zoom and snap back:** The component automatically resets zoom and snaps back to the initial position when the gesture ends.
+- **Interactive Callbacks:** The component provides interactive callbacks such as `onInteractionStart`, `onInteractionEnd`, `onPinchStart`, `onPinchEnd`, `onPanStart`, and `onPanEnd` that allow you to handle image interactions and customize the user experience.
+- **Reanimated**: Compatible with `Reanimated v2`.
+- **Written in TypeScript:** The library is written in `TypeScript`, providing type safety and improving the maintainability of your code.
+- **Customizable Loader:** You can customize the default loader or provide your own custom loader using the `activityIndicatorProps` and `renderLoader` props, giving you full control over the loading state of the image.
+- **Full React Native Image Props Support:** The component supports all React Native Image props, making it easy to integrate with existing code and utilize all the features that React Native Image provides.
 
 ## Getting Started
 
-`npm install @likashefqet/react-native-image-zoom`
-or `yarn add @likashefqet/react-native-image-zoom`
+To use the `ImageZoom` component, you first need to install the package via npm or yarn. Run either of the following commands:
 
+```sh
+npm install @likashefqet/react-native-image-zoom
+```
 
-This library been written in `React Native Reanimated v2`, make sure to follow [installation instructions](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation) if you haven't installed Reanimated yet.
+```sh
+yarn add @likashefqet/react-native-image-zoom
+```
 
-This library uses `React Native Gesture Handler`, make sure to follow [installation instructions](https://docs.swmansion.com/react-native-gesture-handler/docs/) if you haven't installed Gesture Handler yet.
+🚨 🚨 Please note that this library is built with React Native Reanimated v2 and uses React Native Gesture Handler. If you haven't installed Reanimated and Gesture Handler yet, please follow the installation instructions for [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation) and [Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/).
+
 ## Usage
+
+First, import the `ImageZoom` component from the `@likashefqet/react-native-image-zoom` library:
 
 ```javascript
 import { ImageZoom } from '@likashefqet/react-native-image-zoom';
 ```
 
-Basics:
+To use the `ImageZoom` component, simply pass the uri prop with the URL of the image you want to zoom:
+
 ```javascript
 <ImageZoom uri={imageUri} />
 ```
 
+```javascript
+<ImageZoom
+  uri={imageUri}
+  minScale={0.5}
+  maxScale={3}
+  onInteractionStart={() => console.log('Interaction started')}
+  onInteractionEnd={() => console.log('Interaction ended')}
+  onPinchStart={() => console.log('Pinch gesture started')}
+  onPinchEnd={() => console.log('Pinch gesture ended')}
+  onPanStart={() => console.log('Pan gesture started')}
+  onPanEnd={() => console.log('Pan gesture ended')}
+  renderLoader={() => <CustomLoader />}
+/>
+```
+
 ## Properties
+
 All `React Native Image Props` &
 
-| Property               | Type     | Default             | Description                                                                                |
-| ---------------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------ |
-| uri                    | String   | `''` (empty string) | Image uri. Can be overridden by source prop.                                               |
-| minScale               | Number   | `1`                 | The minimum allowed zoom scale.                                                            |
-| maxScale               | Number   | `5`                 | The maximum allowed zoom scale.                                                            |
-| containerStyle         | Object   | `{}`                | Style object to be applied to the container.                                               |
-| imageContainerStyle    | Object   | `{}`                | Style object to be applied to the image container.                                         |
-| activityIndicatorProps | Object   | `{}`                | Activity Indicator Props to customize the default loader.                                  |
-| minPanPointers         | Number   | `2`                 | Minimum pointers to enable pan gesture.                                                    |
-| maxPanPointers         | Number   | `2`                 | Minimum pointers to enable pan gesture.                                                    |
-| isPanEnabled           | Boolean  | `true`              | Determines if pan gesture should be enabled within the limits of min and max pan pointers. |
-| isPinchEnabled         | Boolean  | `true`              | Determines if pinch gesture should be enabled.                                             |
-| renderLoader           | Function | `undefined`         | Function that renders a custom loading component. Render `null` to disable loader.         |
-| onInteractionStart     | Function | `undefined`         | Callback to trigger when the image interaction starts.                                     |
-| onInteractionEnd       | Function | `undefined`         | Callback to trigger when the image interaction ends.                                       |
-| onPinchStart           | Function | `undefined`         | Callback to trigger when the image pinching starts.                                        |
-| onPinchEnd             | Function | `undefined`         | Callback to trigger when the image pinching ends.                                          |
-| onPanStart             | Function | `undefined`         | Callback to trigger when the image panning starts.                                         |
-| onPanEnd               | Function | `undefined`         | Callback to trigger when the image panning ends.                                           |
+| Property               | Type     | Default             | Description                                                                                     |
+| ---------------------- | -------- | ------------------- | ----------------------------------------------------------------------------------------------- |
+| uri                    | String   | `''` (empty string) | The image's URI, which can be overridden by the `source` prop.                                  |
+| minScale               | Number   | `1`                 | The minimum scale allowed for zooming.                                                          |
+| maxScale               | Number   | `5`                 | The maximum scale allowed for zooming.                                                          |
+| minPanPointers         | Number   | `2`                 | The minimum number of pointers required to enable panning.                                      |
+| maxPanPointers         | Number   | `2`                 | The maximum number of pointers required to enable panning.                                      |
+| isPanEnabled           | Boolean  | `true`              | Determines whether panning is enabled within the range of the minimum and maximum pan pointers. |
+| isPinchEnabled         | Boolean  | `true`              | Determines whether pinching is enabled.                                                         |
+| onInteractionStart     | Function | `undefined`         | A callback triggered when the image interaction starts.                                         |
+| onInteractionEnd       | Function | `undefined`         | A callback triggered when the image interaction ends.                                           |
+| onPinchStart           | Function | `undefined`         | A callback triggered when the image pinching starts.                                            |
+| onPinchEnd             | Function | `undefined`         | A callback triggered when the image pinching ends.                                              |
+| onPanStart             | Function | `undefined`         | A callback triggered when the image panning starts.                                             |
+| onPanEnd               | Function | `undefined`         | A callback triggered when the image panning ends.                                               |
+| containerStyle         | Object   | `{}`                | The style object applied to the container.                                                      |
+| imageContainerStyle    | Object   | `{}`                | The style object applied to the image container.                                                |
+| activityIndicatorProps | Object   | `{}`                | The `ActivityIndicator` props used to customize the default loader.                             |
+| renderLoader           | Function | `undefined`         | A function that renders a custom loading component. Set to `null` to disable the loader.        |
 
 ## Changelog
 
-Read the [changelog](CHANGELOG.md).
+Please refer to the [Releases](https://github.com/likashefqet/react-native-image-zoom/releases) section on the GitHub repository. Each release includes a detailed list of changes made to the library, including bug fixes, new features, and any breaking changes. We recommend reviewing these changes before updating to a new version of the library to ensure a smooth transition.
 
 ## Author
 
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/likashefqet"><img src="https://avatars.githubusercontent.com/u/22661589?v=4?s=96" width="96px;" alt=""/><br /><sub><b>Shefqet Lika</b></sub></a><br /><a href="https://github.com/likashefqet/react-native-image-zoom/commits?author=likashefqet" title="Code">💻</a></td>
-  </tr>
-</table>
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
+<table> <tr> <td align='center'> <p></p><a href="https://github.com/likashefqet"><pre><img src="https://avatars.githubusercontent.com/u/22661589?v=4?s=96" width="128px;" marginBottom="8px" alt=""/><br/><br/>Shefqet Lika</pre></a> <a href="https://github.com/likashefqet/react-native-image-zoom/commits?author=likashefqet" title="Code"><pre>💻 commits</pre></a> </td></tr></table>
 
 <!-- ## Sponsor & Support -->
+
 ## Support
 
 <!-- To keep this library maintained and up-to-date please consider [sponsoring it on GitHub](https://github.com/sponsors/likashefqet). Or i -->
-If you are looking for a private support or help in customizing the experience, then reach out to me by email [@likashefi](mailto:likashefi@gmail.com).
+
+If you need further assistance, feel free to reach out to me by email at [@likashefi](mailto:likashefi@gmail.com).
 
 ## License
 
-[MIT](./LICENSE)
+The library is licensed under the [MIT](./LICENSE) License.
 
----
-
-<!-- 
+<!--
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.

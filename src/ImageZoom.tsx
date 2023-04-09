@@ -20,7 +20,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { clamp, noop } from '../helpers/index';
+import { clamp } from './helpers';
 
 import type { ImageZoomProps } from './types';
 
@@ -50,13 +50,13 @@ export default function ImageZoom({
   maxPanPointers = 2,
   isPanEnabled = true,
   isPinchEnabled = true,
-  onLoadEnd = noop,
-  onInteractionStart = noop,
-  onInteractionEnd = noop,
-  onPinchStart = noop,
-  onPinchEnd = noop,
-  onPanStart = noop,
-  onPanEnd = noop,
+  onLoadEnd,
+  onInteractionStart,
+  onInteractionEnd,
+  onPinchStart,
+  onPinchEnd,
+  onPanStart,
+  onPanEnd,
   style = {},
   containerStyle = {},
   imageContainerStyle = {},
@@ -91,38 +91,38 @@ export default function ImageZoom({
   const onInteractionStarted = () => {
     if (!isInteracting.current) {
       isInteracting.current = true;
-      onInteractionStart();
+      onInteractionStart?.();
     }
   };
 
   const onInteractionEnded = () => {
     if (isInteracting.current && !isPinching.current && !isPanning.current) {
       isInteracting.current = false;
-      onInteractionEnd();
+      onInteractionEnd?.();
     }
   };
 
   const onPinchStarted = () => {
     onInteractionStarted();
     isPinching.current = true;
-    onPinchStart();
+    onPinchStart?.();
   };
 
   const onPinchEnded = () => {
     isPinching.current = false;
-    onPinchEnd();
+    onPinchEnd?.();
     onInteractionEnded();
   };
 
   const onPanStarted = () => {
     onInteractionStarted();
     isPanning.current = true;
-    onPanStart();
+    onPanStart?.();
   };
 
   const onPanEnded = () => {
     isPanning.current = false;
-    onPanEnd();
+    onPanEnd?.();
     onInteractionEnded();
   };
 
@@ -186,7 +186,7 @@ export default function ImageZoom({
   };
 
   const onImageLoadEnd = () => {
-    onLoadEnd();
+    onLoadEnd?.();
     setIsLoading(false);
   };
 

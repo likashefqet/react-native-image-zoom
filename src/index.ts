@@ -1,3 +1,2 @@
-import ImageZoom from './components/ImageZoom';
-
-export { ImageZoom };
+export { default as ImageZoom } from './ImageZoom';
+export * from './types';

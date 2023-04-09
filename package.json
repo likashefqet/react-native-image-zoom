@@ -2,9 +2,15 @@
   "name": "@likashefqet/react-native-image-zoom",
   "version": "1.2.1",
   "description": "A performant zoomable image written in Reanimated v2 🚀",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/components/types.d.ts",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/index.d.ts",
+  "react-native": "src/index.ts",
+  "files": [
+    "src",
+    "lib",
+    "mock.js"
+  ],
   "scripts": {
     "test": "jest",
     "typescript": "tsc --noEmit",

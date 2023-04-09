@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "react-native-image-zoom": ["./src/index"]
+      "@likashefqet/react-native-image-zoom": ["./src/index"],
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

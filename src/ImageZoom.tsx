@@ -74,19 +74,15 @@ export default function ImageZoom({
   const [isLoading, setIsLoading] = useState(true);
   const [state, setState] = useState({
     canInteract: false,
-    centerX: 0,
-    centerY: 0,
+    center: { x: 0, y: 0 },
   });
 
-  const { canInteract, centerX, centerY } = state;
+  const { canInteract, center } = state;
 
   const scale = useSharedValue(1);
-  const initialFocalX = useSharedValue(0);
-  const initialFocalY = useSharedValue(0);
-  const focalX = useSharedValue(0);
-  const focalY = useSharedValue(0);
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
+  const initialFocal = { x: useSharedValue(0), y: useSharedValue(0) };
+  const focal = { x: useSharedValue(0), y: useSharedValue(0) };
+  const translate = { x: useSharedValue(0), y: useSharedValue(0) };
 
   const onInteractionStarted = () => {
     if (!isInteracting.current) {
@@ -128,46 +124,46 @@ export default function ImageZoom({
 
   const panHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onActive: (event: PanGestureHandlerEventPayload) => {
-      translateX.value = event.translationX;
-      translateY.value = event.translationY;
+      translate.x.value = event.translationX;
+      translate.y.value = event.translationY;
     },
     onFinish: () => {
-      translateX.value = withTiming(0);
-      translateY.value = withTiming(0);
+      translate.x.value = withTiming(0);
+      translate.y.value = withTiming(0);
     },
   });
 
   const pinchHandler =
     useAnimatedGestureHandler<PinchGestureHandlerGestureEvent>({
       onStart: (event: PinchGestureHandlerEventPayload) => {
-        initialFocalX.value = event.focalX;
-        initialFocalY.value = event.focalY;
+        initialFocal.x.value = event.focalX;
+        initialFocal.y.value = event.focalY;
       },
       onActive: (event: PinchGestureHandlerEventPayload) => {
         // onStart: focalX & focalY result both to 0 on Android
-        if (initialFocalX.value === 0 && initialFocalY.value === 0) {
-          initialFocalX.value = event.focalX;
-          initialFocalY.value = event.focalY;
+        if (initialFocal.x.value === 0 && initialFocal.x.value === 0) {
+          initialFocal.x.value = event.focalX;
+          initialFocal.y.value = event.focalY;
         }
         scale.value = clamp(event.scale, minScale, maxScale);
-        focalX.value = (centerX - initialFocalX.value) * (scale.value - 1);
-        focalY.value = (centerY - initialFocalY.value) * (scale.value - 1);
+        focal.x.value = (center.x - initialFocal.x.value) * (scale.value - 1);
+        focal.y.value = (center.y - initialFocal.y.value) * (scale.value - 1);
       },
       onFinish: () => {
         scale.value = withTiming(1);
-        focalX.value = withTiming(0);
-        focalY.value = withTiming(0);
-        initialFocalX.value = 0;
-        initialFocalY.value = 0;
+        focal.x.value = withTiming(0);
+        focal.y.value = withTiming(0);
+        initialFocal.x.value = 0;
+        initialFocal.y.value = 0;
       },
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { translateX: focalX.value },
-      { translateY: focalY.value },
+      { translateX: translate.x.value },
+      { translateY: translate.y.value },
+      { translateX: focal.x.value },
+      { translateY: focal.y.value },
       { scale: scale.value },
     ],
   }));
@@ -180,8 +176,7 @@ export default function ImageZoom({
     setState((current) => ({
       ...current,
       canInteract: true,
-      centerX: x + width / 2,
-      centerY: y + height / 2,
+      center: { x: x + width / 2, y: y + height / 2 },
     }));
   };
 

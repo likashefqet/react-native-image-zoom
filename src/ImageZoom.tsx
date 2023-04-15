@@ -1,20 +1,15 @@
 import React, { useRef, useState } from 'react';
+import { LayoutChangeEvent, StyleSheet } from 'react-native';
 import {
-  ActivityIndicator,
-  Image,
-  LayoutChangeEvent,
-  StyleSheet,
-} from 'react-native';
-import {
-  PanGestureHandler,
+  Gesture,
+  GestureDetector,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
   PanGestureHandlerEventPayload,
-  PanGestureHandlerGestureEvent,
-  PinchGestureHandler,
   PinchGestureHandlerEventPayload,
-  PinchGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 import Animated, {
-  useAnimatedGestureHandler,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -24,21 +19,9 @@ import { clamp } from './helpers';
 
 import type { ImageZoomProps } from './types';
 
-const AnimatedImage = Animated.createAnimatedComponent(Image);
-
 const styles = StyleSheet.create({
-  container: {
+  image: {
     flex: 1,
-  },
-  content: {
-    flex: 1,
-    flexGrow: 1,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  loader: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'whitesmoke',
   },
 });
 
@@ -48,9 +31,6 @@ export default function ImageZoom({
   maxScale = 5,
   minPanPointers = 2,
   maxPanPointers = 2,
-  isPanEnabled = true,
-  isPinchEnabled = true,
-  onLoadEnd,
   onInteractionStart,
   onInteractionEnd,
   onPinchStart,
@@ -58,31 +38,32 @@ export default function ImageZoom({
   onPanStart,
   onPanEnd,
   style = {},
-  containerStyle = {},
-  imageContainerStyle = {},
-  activityIndicatorProps = {},
-  renderLoader,
   ...props
 }: ImageZoomProps) {
-  const panRef = useRef();
-  const pinchRef = useRef();
-
   const isInteracting = useRef(false);
   const isPanning = useRef(false);
   const isPinching = useRef(false);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [state, setState] = useState({
-    canInteract: false,
-    center: { x: 0, y: 0 },
+  const [center, setCenter] = useState({
+    x: 0,
+    y: 0,
   });
-
-  const { canInteract, center } = state;
 
   const scale = useSharedValue(1);
   const initialFocal = { x: useSharedValue(0), y: useSharedValue(0) };
   const focal = { x: useSharedValue(0), y: useSharedValue(0) };
   const translate = { x: useSharedValue(0), y: useSharedValue(0) };
+
+  const onLayout = ({
+    nativeEvent: {
+      layout: { x, y, width, height },
+    },
+  }: LayoutChangeEvent) => {
+    setCenter({
+      x: x + width / 2,
+      y: y + height / 2,
+    });
+  };
 
   const onInteractionStarted = () => {
     if (!isInteracting.current) {
@@ -122,40 +103,42 @@ export default function ImageZoom({
     onInteractionEnded();
   };
 
-  const panHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
-    onActive: (event: PanGestureHandlerEventPayload) => {
+  const panGesture = Gesture.Pan()
+    .minPointers(minPanPointers)
+    .maxPointers(maxPanPointers)
+    .onStart(() => {
+      runOnJS(onPanStarted)();
+    })
+    .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
       translate.x.value = event.translationX;
       translate.y.value = event.translationY;
-    },
-    onFinish: () => {
+    })
+    .onEnd(() => {
       translate.x.value = withTiming(0);
       translate.y.value = withTiming(0);
-    },
-  });
+      runOnJS(onPanEnded)();
+    });
 
-  const pinchHandler =
-    useAnimatedGestureHandler<PinchGestureHandlerGestureEvent>({
-      onStart: (event: PinchGestureHandlerEventPayload) => {
+  const pinchGesture = Gesture.Pinch()
+    .onStart(
+      (event: GestureStateChangeEvent<PinchGestureHandlerEventPayload>) => {
+        runOnJS(onPinchStarted)();
         initialFocal.x.value = event.focalX;
         initialFocal.y.value = event.focalY;
-      },
-      onActive: (event: PinchGestureHandlerEventPayload) => {
-        // onStart: focalX & focalY result both to 0 on Android
-        if (initialFocal.x.value === 0 && initialFocal.x.value === 0) {
-          initialFocal.x.value = event.focalX;
-          initialFocal.y.value = event.focalY;
-        }
-        scale.value = clamp(event.scale, minScale, maxScale);
-        focal.x.value = (center.x - initialFocal.x.value) * (scale.value - 1);
-        focal.y.value = (center.y - initialFocal.y.value) * (scale.value - 1);
-      },
-      onFinish: () => {
-        scale.value = withTiming(1);
-        focal.x.value = withTiming(0);
-        focal.y.value = withTiming(0);
-        initialFocal.x.value = 0;
-        initialFocal.y.value = 0;
-      },
+      }
+    )
+    .onUpdate((event: GestureUpdateEvent<PinchGestureHandlerEventPayload>) => {
+      scale.value = clamp(event.scale, minScale, maxScale);
+      focal.x.value = (center.x - initialFocal.x.value) * (scale.value - 1);
+      focal.y.value = (center.y - initialFocal.y.value) * (scale.value - 1);
+    })
+    .onEnd(() => {
+      scale.value = withTiming(1);
+      focal.x.value = withTiming(0);
+      focal.y.value = withTiming(0);
+      initialFocal.x.value = 0;
+      initialFocal.y.value = 0;
+      runOnJS(onPinchEnded)();
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -168,72 +151,15 @@ export default function ImageZoom({
     ],
   }));
 
-  const onLayout = ({
-    nativeEvent: {
-      layout: { x, y, width, height },
-    },
-  }: LayoutChangeEvent) => {
-    setState((current) => ({
-      ...current,
-      canInteract: true,
-      center: { x: x + width / 2, y: y + height / 2 },
-    }));
-  };
-
-  const onImageLoadEnd = () => {
-    onLoadEnd?.();
-    setIsLoading(false);
-  };
-
   return (
-    <PinchGestureHandler
-      ref={pinchRef}
-      simultaneousHandlers={[panRef]}
-      onGestureEvent={pinchHandler}
-      onActivated={onPinchStarted}
-      onCancelled={onPinchEnded}
-      onEnded={onPinchEnded}
-      onFailed={onPinchEnded}
-      enabled={isPinchEnabled && canInteract}
-    >
-      <Animated.View style={[styles.container, containerStyle]}>
-        <PanGestureHandler
-          ref={panRef}
-          simultaneousHandlers={[pinchRef]}
-          onGestureEvent={panHandler}
-          onActivated={onPanStarted}
-          onCancelled={onPanEnded}
-          onEnded={onPanEnded}
-          onFailed={onPanEnded}
-          minPointers={minPanPointers}
-          maxPointers={maxPanPointers}
-          enabled={isPanEnabled && canInteract}
-        >
-          <Animated.View
-            onLayout={onLayout}
-            style={[styles.content, imageContainerStyle]}
-          >
-            <AnimatedImage
-              style={[styles.container, style, animatedStyle]}
-              source={{ uri }}
-              resizeMode="contain"
-              onLoadEnd={onImageLoadEnd}
-              {...props}
-            />
-            {isLoading &&
-              (renderLoader ? (
-                renderLoader()
-              ) : (
-                <ActivityIndicator
-                  size="small"
-                  style={styles.loader}
-                  color="dimgrey"
-                  {...activityIndicatorProps}
-                />
-              ))}
-          </Animated.View>
-        </PanGestureHandler>
-      </Animated.View>
-    </PinchGestureHandler>
+    <GestureDetector gesture={Gesture.Simultaneous(panGesture, pinchGesture)}>
+      <Animated.Image
+        style={[styles.image, style, animatedStyle]}
+        source={{ uri }}
+        resizeMode="contain"
+        onLayout={onLayout}
+        {...props}
+      />
+    </GestureDetector>
   );
 }

@@ -1,10 +1,4 @@
-import type {
-  ActivityIndicatorProps,
-  ImageProps,
-  ImageSourcePropType,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import type { ImageProps, ImageSourcePropType } from 'react-native';
 
 export type ImageZoomProps = Omit<ImageProps, 'source'> & {
   /**
@@ -33,16 +27,6 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    */
   maxPanPointers?: number;
   /**
-   * Determines whether panning is enabled within the range of the minimum and maximum pan pointers.
-   * @default true
-   */
-  isPanEnabled?: boolean;
-  /**
-   * Determines whether pinching is enabled.
-   * @default true
-   */
-  isPinchEnabled?: boolean;
-  /**
    * A callback triggered when the image interaction starts.
    */
   onInteractionStart?: Function;
@@ -66,25 +50,6 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    * A callback triggered when the image panning ends.
    */
   onPanEnd?: Function;
-  /**
-   * The style object applied to the container.
-   * @default {}
-   */
-  containerStyle?: StyleProp<ViewStyle>;
-  /**
-   * The style object applied to the image container.
-   * @default {}
-   */
-  imageContainerStyle?: StyleProp<ViewStyle>;
-  /**
-   * The `ActivityIndicator` props used to customize the default loader.
-   * @default {}
-   */
-  activityIndicatorProps?: ActivityIndicatorProps;
-  /**
-   * A function that renders a custom loading component. Set to `null` to disable the loader.
-   */
-  renderLoader?: Function;
   /**
    * @see https://facebook.github.io/react-native/docs/image.html#source
    * @default undefined

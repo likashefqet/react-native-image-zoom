@@ -16,6 +16,10 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    * @default 5
    */
   maxScale?: number;
+  /* The value of the image scale when a double-tap gesture is detected.
+   * @default 3
+   */
+  doubleTapScale?: number;
   /**
    * The minimum number of pointers required to enable panning.
    * @default 2
@@ -26,6 +30,20 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    * @default 2
    */
   maxPanPointers?: number;
+  /**
+   * Determines whether panning is enabled within the range of the minimum and maximum pan pointers.
+   * @default true
+   */
+  isPanEnabled?: boolean;
+  /**
+   * Determines whether pinching is enabled.
+   * @default true
+   */
+  isPinchEnabled?: boolean;
+  /**
+   * Determines whether to reset the zoom level and pan position when the image interaction ends.
+   */
+  isDoubleTapEnabled?: boolean;
   /**
    * A callback triggered when the image interaction starts.
    */
@@ -56,3 +74,66 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    */
   source?: ImageSourcePropType;
 };
+
+export type ImageZoomRef = {
+  /**
+   * Resets the image zoom level to its original scale.
+   */
+  reset(): void;
+};
+
+export type ImageZoomUseLayoutProps = Pick<ImageZoomProps, 'onLayout'>;
+
+export type ImageZoomLayoutState = {
+  /**
+   * The x-coordinate of the top-left corner of the image relative to the top-left corner of the container.
+   */
+  x: number;
+  /**
+   * The y-coordinate of the top-left corner of the image relative to the top-left corner of the container.
+   */
+  y: number;
+  /**
+   * The width of the image.
+   */
+  width: number;
+  /**
+   * The height of the image.
+   */
+  height: number;
+  /**
+   * An object containing the x and y coordinates of the center point of the image, relative to the top-left corner of the container.
+   */
+  center: {
+    /**
+     * The x-coordinate of the center point of the image.
+     */
+    x: number;
+    /**
+     * The y-coordinate of the center point of the image.
+     */
+    y: number;
+  };
+};
+
+export type ImageZoomUseGesturesProps = Pick<
+  ImageZoomLayoutState,
+  'width' | 'height' | 'center'
+> &
+  Pick<
+    ImageZoomProps,
+    | 'minScale'
+    | 'maxScale'
+    | 'doubleTapScale'
+    | 'minPanPointers'
+    | 'maxPanPointers'
+    | 'isPanEnabled'
+    | 'isPinchEnabled'
+    | 'isDoubleTapEnabled'
+    | 'onInteractionStart'
+    | 'onInteractionEnd'
+    | 'onPinchStart'
+    | 'onPinchEnd'
+    | 'onPanStart'
+    | 'onPanEnd'
+  >;

@@ -58,6 +58,7 @@ export default function ImageZoom({
   onPanStart,
   onPanEnd,
   style = {},
+  resizeMode = "contain",
   containerStyle = {},
   imageContainerStyle = {},
   activityIndicatorProps = {},
@@ -221,7 +222,7 @@ export default function ImageZoom({
             <AnimatedImage
               style={[styles.container, style, animatedStyle]}
               source={{ uri }}
-              resizeMode="contain"
+              resizeMode={resizeMode}
               onLoadEnd={onImageLoadEnd}
               {...props}
             />

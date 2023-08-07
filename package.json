@@ -1,7 +1,7 @@
 {
   "name": "@likashefqet/react-native-image-zoom",
   "version": "2.1.0",
-  "description": "A performant zoomable image written in Reanimated v2 🚀",
+  "description": "A performant zoomable image written in Reanimated v2+ 🚀",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -182,8 +182,5 @@
         }
       ]
     ]
-  },
-  "dependencies": {
-    "expo": "^49.0.6"
   }
 }

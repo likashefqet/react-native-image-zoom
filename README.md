@@ -10,7 +10,7 @@
 ![GitHub issues](https://img.shields.io/github/issues/likashefqet/react-native-image-zoom)
 
 **A performant and customizable image zoom component  
-built with Reanimated v2 and TypeScript. 🌃 🚀**
+built with Reanimated v2+ and TypeScript. 🌃 🚀**
 
 _Demo:_
 
@@ -26,9 +26,8 @@ Photo by <a href="https://unsplash.com/photos/XLqiL-rz4V8" title="Photo by Walli
 - **Customizable Zoom Settings:** With the `minScale` and `maxScale` props, you can set the minimum and maximum zoom levels for your images, giving you precise control over the zooming experience.
 - **Reset zoom and snap back:** The component automatically resets zoom and snaps back to the initial position when the gesture ends.
 - **Interactive Callbacks:** The component provides interactive callbacks such as `onInteractionStart`, `onInteractionEnd`, `onPinchStart`, `onPinchEnd`, `onPanStart`, and `onPanEnd` that allow you to handle image interactions and customize the user experience.
-- **Reanimated**: Compatible with `Reanimated v2`.
+- **Reanimated**: Compatible with `Reanimated v2` & `Reanimated v3`.
 - **Written in TypeScript:** The library is written in `TypeScript`, providing type safety and improving the maintainability of your code.
-- **Customizable Loader:** You can customize the default loader or provide your own custom loader using the `activityIndicatorProps` and `renderLoader` props, giving you full control over the loading state of the image.
 - **Full React Native Image Props Support:** The component supports all React Native Image props, making it easy to integrate with existing code and utilize all the features that React Native Image provides.
 
 ## Getting Started
@@ -71,6 +70,7 @@ To use the `ImageZoom` component, simply pass the uri prop with the URL of the i
   onPanStart={() => console.log('Pan gesture started')}
   onPanEnd={() => console.log('Pan gesture ended')}
   renderLoader={() => <CustomLoader />}
+  resizeMode="cover"
 />
 ```
 
@@ -78,25 +78,21 @@ To use the `ImageZoom` component, simply pass the uri prop with the URL of the i
 
 All `React Native Image Props` &
 
-| Property               | Type     | Default             | Description                                                                                     |
-| ---------------------- | -------- | ------------------- | ----------------------------------------------------------------------------------------------- |
-| uri                    | String   | `''` (empty string) | The image's URI, which can be overridden by the `source` prop.                                  |
-| minScale               | Number   | `1`                 | The minimum scale allowed for zooming.                                                          |
-| maxScale               | Number   | `5`                 | The maximum scale allowed for zooming.                                                          |
-| minPanPointers         | Number   | `2`                 | The minimum number of pointers required to enable panning.                                      |
-| maxPanPointers         | Number   | `2`                 | The maximum number of pointers required to enable panning.                                      |
-| isPanEnabled           | Boolean  | `true`              | Determines whether panning is enabled within the range of the minimum and maximum pan pointers. |
-| isPinchEnabled         | Boolean  | `true`              | Determines whether pinching is enabled.                                                         |
-| onInteractionStart     | Function | `undefined`         | A callback triggered when the image interaction starts.                                         |
-| onInteractionEnd       | Function | `undefined`         | A callback triggered when the image interaction ends.                                           |
-| onPinchStart           | Function | `undefined`         | A callback triggered when the image pinching starts.                                            |
-| onPinchEnd             | Function | `undefined`         | A callback triggered when the image pinching ends.                                              |
-| onPanStart             | Function | `undefined`         | A callback triggered when the image panning starts.                                             |
-| onPanEnd               | Function | `undefined`         | A callback triggered when the image panning ends.                                               |
-| containerStyle         | Object   | `{}`                | The style object applied to the container.                                                      |
-| imageContainerStyle    | Object   | `{}`                | The style object applied to the image container.                                                |
-| activityIndicatorProps | Object   | `{}`                | The `ActivityIndicator` props used to customize the default loader.                             |
-| renderLoader           | Function | `undefined`         | A function that renders a custom loading component. Set to `null` to disable the loader.        |
+| Property           | Type     | Default             | Description                                                                                     |
+| ------------------ | -------- | ------------------- | ----------------------------------------------------------------------------------------------- |
+| uri                | String   | `''` (empty string) | The image's URI, which can be overridden by the `source` prop.                                  |
+| minScale           | Number   | `1`                 | The minimum scale allowed for zooming.                                                          |
+| maxScale           | Number   | `5`                 | The maximum scale allowed for zooming.                                                          |
+| minPanPointers     | Number   | `2`                 | The minimum number of pointers required to enable panning.                                      |
+| maxPanPointers     | Number   | `2`                 | The maximum number of pointers required to enable panning.                                      |
+| isPanEnabled       | Boolean  | `true`              | Determines whether panning is enabled within the range of the minimum and maximum pan pointers. |
+| isPinchEnabled     | Boolean  | `true`              | Determines whether pinching is enabled.                                                         |
+| onInteractionStart | Function | `undefined`         | A callback triggered when the image interaction starts.                                         |
+| onInteractionEnd   | Function | `undefined`         | A callback triggered when the image interaction ends.                                           |
+| onPinchStart       | Function | `undefined`         | A callback triggered when the image pinching starts.                                            |
+| onPinchEnd         | Function | `undefined`         | A callback triggered when the image pinching ends.                                              |
+| onPanStart         | Function | `undefined`         | A callback triggered when the image panning starts.                                             |
+| onPanEnd           | Function | `undefined`         | A callback triggered when the image panning ends.                                               |
 
 ## Changelog
 

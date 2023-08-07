@@ -1,17 +1,14 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { ImageZoom, ImageZoomRef } from '../../src';
-import Button from './Button';
+import { ImageZoom } from '../../src';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 24,
   },
   image: {
     overflow: 'hidden',
-    marginBottom: 24,
   },
 });
 
@@ -19,16 +16,12 @@ const styles = StyleSheet.create({
 const imageUri = 'https://images.unsplash.com/photo-1596003906949-67221c37965c';
 
 function App() {
-  const imageRef = useRef<ImageZoomRef>();
-
   return (
     <SafeAreaView style={styles.container}>
       <ImageZoom
-        ref={imageRef}
         uri={imageUri}
         minScale={0.5}
         minPanPointers={1}
-        isDoubleTapEnabled
         onInteractionStart={() => console.log('onInteractionStart')}
         onInteractionEnd={() => console.log('onInteractionEnd')}
         onPanStart={() => console.log('onPanStart')}
@@ -38,7 +31,6 @@ function App() {
         style={styles.image}
         resizeMode="cover"
       />
-      <Button title="Reset" onPress={() => imageRef.current?.reset()} />
     </SafeAreaView>
   );
 }

@@ -1,45 +1,37 @@
 import React from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { ImageZoom } from '@likashefqet/react-native-image-zoom';
+import { ImageZoom } from '../../src';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  image: {
+    overflow: 'hidden',
+  },
+});
 
 // Photo by Walling [https://unsplash.com/photos/XLqiL-rz4V8] on Unsplash [https://unsplash.com/]
 const imageUri = 'https://images.unsplash.com/photo-1596003906949-67221c37965c';
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'black',
-  },
-  loader: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'black',
-  },
-});
-
 function App() {
   return (
-    <>
-      <StatusBar
-        barStyle="light-content"
-        translucent
-        backgroundColor="transparent"
-      />
+    <SafeAreaView style={styles.container}>
       <ImageZoom
         uri={imageUri}
-        containerStyle={styles.container}
-        activityIndicatorProps={{
-          color: 'white',
-          style: styles.loader,
-        }}
+        minScale={0.5}
+        minPanPointers={1}
         onInteractionStart={() => console.log('onInteractionStart')}
         onInteractionEnd={() => console.log('onInteractionEnd')}
         onPanStart={() => console.log('onPanStart')}
         onPanEnd={() => console.log('onPanEnd')}
         onPinchStart={() => console.log('onPinchStart')}
         onPinchEnd={() => console.log('onPinchEnd')}
-        minScale={0.6}
+        style={styles.image}
+        resizeMode="cover"
       />
-    </>
+    </SafeAreaView>
   );
 }
 

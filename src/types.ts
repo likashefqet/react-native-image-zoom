@@ -65,6 +65,10 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    * @default undefined
    */
   source?: ImageSourcePropType;
+  /**
+   * Child components (Animated.Image for example)
+   */ 
+  children?: JSX.Element;
 };
 
 export type ImageZoomUseLayoutProps = Pick<ImageZoomProps, 'onLayout'>;

@@ -36,6 +36,11 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    * @default true
    */
   isPinchEnabled?: boolean;
+    /**
+   * Determines whether double tap is enabled.
+   * @default false
+   */
+  isDoubleTapEnabled?: boolean;
   /**
    * A callback triggered when the image interaction starts.
    */
@@ -93,11 +98,13 @@ export type ImageZoomUseGesturesProps = Pick<ImageZoomLayoutState, 'center'> &
   Pick<
     ImageZoomProps,
     | 'minScale'
-    | 'maxScale'
+    | 'maxScale',
+      'doubleTapScale',
     | 'minPanPointers'
     | 'maxPanPointers'
     | 'isPanEnabled'
-    | 'isPinchEnabled'
+    | 'isPinchEnabled',
+      'isDoubleTapEnabled',
     | 'onInteractionStart'
     | 'onInteractionEnd'
     | 'onPinchStart'

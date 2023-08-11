@@ -30,6 +30,7 @@ const ImageZoom: React.FC<ImageZoomProps> = ({
   onPanEnd,
   onLayout,
   style = {},
+  children,
   ...props
 }) => {
   const { center, onImageLayout } = useImageLayout({ onLayout });

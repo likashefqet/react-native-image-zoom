@@ -22,7 +22,7 @@ const ImageZoom: React.FC<ImageZoomProps> = ({
   maxPanPointers,
   isPanEnabled,
   isPinchEnabled,
-  isDoubleTapEnabled = false,
+  isDoubleTapEnabled,
   onInteractionStart,
   onInteractionEnd,
   onPinchStart,

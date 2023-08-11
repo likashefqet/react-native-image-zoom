@@ -17,6 +17,11 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    */
   maxScale?: number;
   /**
+   * The maximum scale allowed for doubleTap.
+   * @default 3
+   */
+  doubleTapScale?: number;
+  /**
    * The minimum number of pointers required to enable panning.
    * @default 2
    */

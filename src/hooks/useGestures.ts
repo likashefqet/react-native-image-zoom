@@ -155,7 +155,6 @@ export const useGestures = ({
       (event: GestureStateChangeEvent<TapGestureHandlerEventPayload>) => {
         runOnJS(onDoubleTapStarted)();
         if (scale.value === 1) {
-          console.log('Zoom in!');
           scale.value = withTiming(doubleTapScale);
           focal.x.value = withTiming(
             (center.x - event.x) * (doubleTapScale - 1)

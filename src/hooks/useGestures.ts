@@ -14,6 +14,7 @@ import type {
   GestureUpdateEvent,
   PanGestureHandlerEventPayload,
   PinchGestureHandlerEventPayload,
+  TapGestureHandlerEventPayload
 } from 'react-native-gesture-handler';
 
 import type { ImageZoomUseGesturesProps } from '../types';
@@ -22,10 +23,12 @@ export const useGestures = ({
   center,
   minScale = 1,
   maxScale = 5,
+  doubleTapScale = 3,
   minPanPointers = 2,
   maxPanPointers = 2,
   isPanEnabled = true,
   isPinchEnabled = true,
+  isDoubleTapEnabled = false,
   onInteractionStart,
   onInteractionEnd,
   onPinchStart,
@@ -36,6 +39,7 @@ export const useGestures = ({
   const isInteracting = useRef(false);
   const isPanning = useRef(false);
   const isPinching = useRef(false);
+  const isDoubleTap = useRef(false);
 
   const scale = useSharedValue(1);
   const initialFocal = { x: useSharedValue(0), y: useSharedValue(0) };
@@ -70,7 +74,7 @@ export const useGestures = ({
 
   const onInteractionEnded = () => {
     if (isInteracting.current && !isPinching.current && !isPanning.current) {
-      reset();
+      if (isDoubleTap.current) reset();
       isInteracting.current = false;
       onInteractionEnd?.();
     }
@@ -97,6 +101,16 @@ export const useGestures = ({
   const onPanEnded = () => {
     isPanning.current = false;
     onPanEnd?.();
+    onInteractionEnded();
+  };
+
+  const onDoubleTapStarted = () => {
+    onInteractionStarted();
+    isDoubleTap.current = true;
+  };
+
+  const onDoubleTapEnded = () => {
+    isDoubleTap.current = false;
     onInteractionEnded();
   };
 
@@ -133,6 +147,31 @@ export const useGestures = ({
       runOnJS(onPinchEnded)();
     });
 
+    const doubleTapGesture = Gesture.Tap()
+    .enabled(isDoubleTapEnabled)
+    .numberOfTaps(2)
+    .maxDuration(250)
+    .onStart(
+      (event: GestureStateChangeEvent<TapGestureHandlerEventPayload>) => {
+        runOnJS(onDoubleTapStarted)();
+        if (scale.value === 1) {
+          console.log('Zoom in!');
+          scale.value = withTiming(doubleTapScale);
+          focal.x.value = withTiming(
+            (center.x - event.x) * (doubleTapScale - 1)
+          );
+          focal.y.value = withTiming(
+            (center.y - event.y) * (doubleTapScale - 1)
+          );
+        } else {
+          reset();
+        }
+      }
+    )
+    .onEnd(() => {
+      runOnJS(onDoubleTapEnded)();
+    });
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translate.x.value },
@@ -143,7 +182,7 @@ export const useGestures = ({
     ],
   }));
 
-  const gestures = Gesture.Simultaneous(pinchGesture, panGesture);
+  const gestures = Gesture.Simultaneous(pinchGesture, panGesture, doubleTapGesture);
 
   return { gestures, animatedStyle };
 };

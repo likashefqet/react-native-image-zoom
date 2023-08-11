@@ -18,6 +18,7 @@ const ImageZoom: React.FC<ImageZoomProps> = ({
   uri = '',
   minScale,
   maxScale,
+  doubleTapScale,
   minPanPointers,
   maxPanPointers,
   isPanEnabled,
@@ -39,6 +40,7 @@ const ImageZoom: React.FC<ImageZoomProps> = ({
     center,
     minScale,
     maxScale,
+    doubleTapScale,
     minPanPointers,
     maxPanPointers,
     isPanEnabled,
@@ -70,4 +72,3 @@ const ImageZoom: React.FC<ImageZoomProps> = ({
 };
 
 export default ImageZoom;
-

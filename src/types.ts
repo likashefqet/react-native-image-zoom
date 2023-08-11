@@ -103,8 +103,8 @@ export type ImageZoomUseGesturesProps = Pick<ImageZoomLayoutState, 'center'> &
     | 'minPanPointers'
     | 'maxPanPointers'
     | 'isPanEnabled'
-    | 'isPinchEnabled',
-      'isDoubleTapEnabled',
+    | 'isPinchEnabled'
+    | 'isDoubleTapEnabled'
     | 'onInteractionStart'
     | 'onInteractionEnd'
     | 'onPinchStart'

@@ -87,6 +87,7 @@ All `React Native Image Props` &
 | maxPanPointers     | Number   | `2`                 | The maximum number of pointers required to enable panning.                                      |
 | isPanEnabled       | Boolean  | `true`              | Determines whether panning is enabled within the range of the minimum and maximum pan pointers. |
 | isPinchEnabled     | Boolean  | `true`              | Determines whether pinching is enabled.                                                         |
+| isDoubleTapEnabled | Boolean  | `false`             | Determines whether double tap is enabled.                                                       |
 | onInteractionStart | Function | `undefined`         | A callback triggered when the image interaction starts.                                         |
 | onInteractionEnd   | Function | `undefined`         | A callback triggered when the image interaction ends.                                           |
 | onPinchStart       | Function | `undefined`         | A callback triggered when the image pinching starts.                                            |

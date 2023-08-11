@@ -98,8 +98,8 @@ export type ImageZoomUseGesturesProps = Pick<ImageZoomLayoutState, 'center'> &
   Pick<
     ImageZoomProps,
     | 'minScale'
-    | 'maxScale',
-      'doubleTapScale',
+    | 'maxScale'
+    | 'doubleTapScale'
     | 'minPanPointers'
     | 'maxPanPointers'
     | 'isPanEnabled'

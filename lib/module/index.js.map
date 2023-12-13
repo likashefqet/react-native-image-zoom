@@ -1,0 +1,1 @@
+{"version":3,"names":["ImageZoom"],"sources":["index.ts"],"sourcesContent":["import ImageZoom from './components/ImageZoom';\r\n\r\nexport { ImageZoom };\r\n"],"mappings":"AAAA,OAAOA,SAAS,MAAM,wBAAwB;AAE9C,SAASA,SAAS"}

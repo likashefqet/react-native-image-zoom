@@ -1,0 +1,1 @@
+{"version":3,"names":["_ImageZoom","_interopRequireDefault","require","obj","__esModule","default"],"sources":["index.ts"],"sourcesContent":["import ImageZoom from './components/ImageZoom';\r\n\r\nexport { ImageZoom };\r\n"],"mappings":";;;;;;;;;;;AAAA,IAAAA,UAAA,GAAAC,sBAAA,CAAAC,OAAA;AAA+C,SAAAD,uBAAAE,GAAA,WAAAA,GAAA,IAAAA,GAAA,CAAAC,UAAA,GAAAD,GAAA,KAAAE,OAAA,EAAAF,GAAA"}

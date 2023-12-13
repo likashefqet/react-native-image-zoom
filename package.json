@@ -155,7 +155,9 @@
       ]
     ]
   },
-  "dependencies": {},
+  "dependencies": {
+    "expo-image": "^1.5.1"
+  },
   "directories": {
     "example": "example",
     "lib": "lib"

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
+import { Image } from 'expo-image';
 import {
   ActivityIndicator,
-  Image,
   LayoutChangeEvent,
   StyleSheet,
 } from 'react-native';

@@ -28,6 +28,7 @@ const ImageZoom: React.FC<ImageZoomProps> = ({
   onPinchEnd,
   onPanStart,
   onPanEnd,
+  onResetAnimationEnd,
   onLayout,
   style = {},
   ...props
@@ -47,6 +48,7 @@ const ImageZoom: React.FC<ImageZoomProps> = ({
     onPinchEnd,
     onPanStart,
     onPanEnd,
+    onResetAnimationEnd,
   });
 
   return (

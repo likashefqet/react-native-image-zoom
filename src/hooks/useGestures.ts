@@ -8,15 +8,17 @@ import {
 } from 'react-native-reanimated';
 
 import { clamp } from '../utils/clamp';
+import {
+  type ImageZoomUseGesturesProps,
+  type OnPanEndCallback,
+  type OnPanStartCallback,
+  type OnPinchEndCallback,
+  type OnPinchStartCallback,
+  ANIMATION_VALUE,
+} from '../types';
 
-import type {
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
-  PanGestureHandlerEventPayload,
-  PinchGestureHandlerEventPayload,
-} from 'react-native-gesture-handler';
-
-import type { ImageZoomUseGesturesProps } from '../types';
+import { useInteractionId } from './useInteractionId';
+import { useAnimationEnd } from './useAnimationEnd';
 
 export const useGestures = ({
   center,
@@ -32,6 +34,7 @@ export const useGestures = ({
   onPinchEnd,
   onPanStart,
   onPanEnd,
+  onResetAnimationEnd,
 }: ImageZoomUseGesturesProps) => {
   const isInteracting = useRef(false);
   const isPanning = useRef(false);
@@ -42,29 +45,46 @@ export const useGestures = ({
   const focal = { x: useSharedValue(0), y: useSharedValue(0) };
   const translate = { x: useSharedValue(0), y: useSharedValue(0) };
 
+  const { getInteractionId, updateInteractionId } = useInteractionId();
+  const { onAnimationEnd } = useAnimationEnd(onResetAnimationEnd);
+
   const reset = useCallback(() => {
     'worklet';
-    scale.value = withTiming(1);
+    const interactionId = getInteractionId();
+    scale.value = withTiming(1, undefined, (...args) =>
+      onAnimationEnd(interactionId, ANIMATION_VALUE.SCALE, ...args)
+    );
     initialFocal.x.value = 0;
     initialFocal.y.value = 0;
-    focal.x.value = withTiming(0);
-    focal.y.value = withTiming(0);
-    translate.x.value = withTiming(0);
-    translate.y.value = withTiming(0);
+    focal.x.value = withTiming(0, undefined, (...args) =>
+      onAnimationEnd(interactionId, ANIMATION_VALUE.FOCAL_X, ...args)
+    );
+    focal.y.value = withTiming(0, undefined, (...args) =>
+      onAnimationEnd(interactionId, ANIMATION_VALUE.FOCAL_Y, ...args)
+    );
+    translate.x.value = withTiming(0, undefined, (...args) =>
+      onAnimationEnd(interactionId, ANIMATION_VALUE.TRANSLATE_X, ...args)
+    );
+    translate.y.value = withTiming(0, undefined, (...args) =>
+      onAnimationEnd(interactionId, ANIMATION_VALUE.TRANSLATE_Y, ...args)
+    );
   }, [
-    focal.x,
-    focal.y,
+    getInteractionId,
+    scale,
     initialFocal.x,
     initialFocal.y,
-    scale,
+    focal.x,
+    focal.y,
     translate.x,
     translate.y,
+    onAnimationEnd,
   ]);
 
   const onInteractionStarted = () => {
     if (!isInteracting.current) {
       isInteracting.current = true;
       onInteractionStart?.();
+      updateInteractionId();
     }
   };
 
@@ -76,27 +96,27 @@ export const useGestures = ({
     }
   };
 
-  const onPinchStarted = () => {
+  const onPinchStarted: OnPinchStartCallback = (event) => {
     onInteractionStarted();
     isPinching.current = true;
-    onPinchStart?.();
+    onPinchStart?.(event);
   };
 
-  const onPinchEnded = () => {
+  const onPinchEnded: OnPinchEndCallback = (...args) => {
     isPinching.current = false;
-    onPinchEnd?.();
+    onPinchEnd?.(...args);
     onInteractionEnded();
   };
 
-  const onPanStarted = () => {
+  const onPanStarted: OnPanStartCallback = (event) => {
     onInteractionStarted();
     isPanning.current = true;
-    onPanStart?.();
+    onPanStart?.(event);
   };
 
-  const onPanEnded = () => {
+  const onPanEnded: OnPanEndCallback = (...args) => {
     isPanning.current = false;
-    onPanEnd?.();
+    onPanEnd?.(...args);
     onInteractionEnded();
   };
 
@@ -104,33 +124,31 @@ export const useGestures = ({
     .enabled(isPanEnabled)
     .minPointers(minPanPointers)
     .maxPointers(maxPanPointers)
-    .onStart(() => {
-      runOnJS(onPanStarted)();
+    .onStart((event) => {
+      runOnJS(onPanStarted)(event);
     })
-    .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
+    .onUpdate((event) => {
       translate.x.value = event.translationX;
       translate.y.value = event.translationY;
     })
-    .onEnd(() => {
-      runOnJS(onPanEnded)();
+    .onEnd((...args) => {
+      runOnJS(onPanEnded)(...args);
     });
 
   const pinchGesture = Gesture.Pinch()
     .enabled(isPinchEnabled)
-    .onStart(
-      (event: GestureStateChangeEvent<PinchGestureHandlerEventPayload>) => {
-        runOnJS(onPinchStarted)();
-        initialFocal.x.value = event.focalX;
-        initialFocal.y.value = event.focalY;
-      }
-    )
-    .onUpdate((event: GestureUpdateEvent<PinchGestureHandlerEventPayload>) => {
+    .onStart((event) => {
+      runOnJS(onPinchStarted)(event);
+      initialFocal.x.value = event.focalX;
+      initialFocal.y.value = event.focalY;
+    })
+    .onUpdate((event) => {
       scale.value = clamp(event.scale, minScale, maxScale);
       focal.x.value = (center.x - initialFocal.x.value) * (scale.value - 1);
       focal.y.value = (center.y - initialFocal.y.value) * (scale.value - 1);
     })
-    .onEnd(() => {
-      runOnJS(onPinchEnded)();
+    .onEnd((...args) => {
+      runOnJS(onPinchEnded)(...args);
     });
 
   const animatedStyle = useAnimatedStyle(() => ({

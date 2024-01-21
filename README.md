@@ -69,7 +69,7 @@ To use the `ImageZoom` component, simply pass the uri prop with the URL of the i
   onPinchEnd={() => console.log('Pinch gesture ended')}
   onPanStart={() => console.log('Pan gesture started')}
   onPanEnd={() => console.log('Pan gesture ended')}
-  renderLoader={() => <CustomLoader />}
+  onResetAnimationEnd={() => console.log('Reset animation ended')}
   resizeMode="cover"
 />
 ```
@@ -93,7 +93,7 @@ All `React Native Image Props` &
 | onPinchEnd         | Function | `undefined`         | A callback triggered when the image pinching ends.                                              |
 | onPanStart         | Function | `undefined`         | A callback triggered when the image panning starts.                                             |
 | onPanEnd           | Function | `undefined`         | A callback triggered when the image panning ends.                                               |
-
+| onResetAnimationEnd| Function | `undefined`         | A callback triggered upon the completion of the reset animation. It accepts two parameters: `finished` and `values`. The `finished` parameter evaluates to true if all animation values have successfully completed the reset animation; otherwise, it is false, indicating interruption by another gesture or unforeseen circumstances. The `values` parameter provides additional detailed information for each animation value.  |
 ## Changelog
 
 Please refer to the [Releases](https://github.com/likashefqet/react-native-image-zoom/releases) section on the GitHub repository. Each release includes a detailed list of changes made to the library, including bug fixes, new features, and any breaking changes. We recommend reviewing these changes before updating to a new version of the library to ensure a smooth transition.

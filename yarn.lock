@@ -2118,6 +2118,11 @@
   resolved "https://registry.yarnpkg.com/@react-native/assets-registry/-/assets-registry-0.72.0.tgz#c82a76a1d86ec0c3907be76f7faf97a32bbed05d"
   integrity sha512-Im93xRJuHHxb1wniGhBMsxLwcfzdYreSZVQGDoMJgkd6+Iky61LInGEHnQCTN0fKNYF1Dvcofb4uMmE1RQHXHQ==
 
+"@react-native/assets-registry@~0.73.1":
+  version "0.73.1"
+  resolved "https://registry.yarnpkg.com/@react-native/assets-registry/-/assets-registry-0.73.1.tgz#e2a6b73b16c183a270f338dc69c36039b3946e85"
+  integrity sha512-2FgAbU7uKM5SbbW9QptPPZx8N9Ke2L7bsHb+EhAanZjFZunA9PaYtyjUQ1s7HD+zDVqOQIvjkpXSv7Kejd2tqg==
+
 "@react-native/codegen@^0.72.6":
   version "0.72.6"
   resolved "https://registry.yarnpkg.com/@react-native/codegen/-/codegen-0.72.6.tgz#029cf61f82f5c6872f0b2ce58f27c4239a5586c8"
@@ -4459,6 +4464,13 @@ expect@^28.0.0, expect@^28.1.3:
     jest-matcher-utils "^28.1.3"
     jest-message-util "^28.1.3"
     jest-util "^28.1.3"
+
+expo-image@^1.5.1:
+  version "1.10.6"
+  resolved "https://registry.yarnpkg.com/expo-image/-/expo-image-1.10.6.tgz#b0e54d31d97742505296c076a5f18d094ba9a8cc"
+  integrity sha512-vcnAIym1eU8vQgV1re1E7rVQZStJimBa4aPDhjFfzMzbddAF7heJuagyewiUkTzbZUwYzPaZAie6VJPyWx9Ueg==
+  dependencies:
+    "@react-native/assets-registry" "~0.73.1"
 
 external-editor@^3.0.3:
   version "3.1.0"

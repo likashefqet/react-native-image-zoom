@@ -7,6 +7,7 @@ import type {
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
   PinchGestureHandlerEventPayload,
+  TapGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import { AnimatableValue } from 'react-native-reanimated';
 
@@ -26,6 +27,10 @@ export type OnPanStartCallback = (
 export type OnPanEndCallback = (
   event: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
   success: boolean
+) => void;
+
+export type OnSingleTapCallback = (
+  event: GestureStateChangeEvent<TapGestureHandlerEventPayload>
 ) => void;
 
 export enum ZOOM_TYPE {
@@ -134,7 +139,7 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
   /**
    * A callback triggered when a single tap is detected.
    */
-  onSingleTap?: () => void;
+  onSingleTap?: OnSingleTapCallback;
   /**
    * A callback triggered when a double tap gesture is detected.
    */
@@ -193,3 +198,10 @@ export type ImageZoomUseGesturesProps = Pick<
     | 'onDoubleTap'
     | 'onResetAnimationEnd'
   >;
+
+export type ImageZoomRef = {
+  /**
+   * Resets the image zoom level to its original scale.
+   */
+  reset: () => void;
+};

@@ -4,10 +4,13 @@ import {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withDecay,
   withTiming,
 } from 'react-native-reanimated';
 
 import { clamp } from '../utils/clamp';
+import { limits } from '../utils/limits';
+import { sum } from '../utils/sum';
 import {
   type ImageZoomUseGesturesProps,
   type OnPanEndCallback,
@@ -20,6 +23,7 @@ import {
 
 import { useInteractionId } from './useInteractionId';
 import { useAnimationEnd } from './useAnimationEnd';
+import { usePanGestureCount } from './usePanGestureCount';
 
 export const useGestures = ({
   width,
@@ -45,15 +49,15 @@ export const useGestures = ({
   onResetAnimationEnd,
 }: ImageZoomUseGesturesProps) => {
   const isInteracting = useRef(false);
-  const isPanning = useRef(false);
   const isPinching = useRef(false);
+  const { isPanning, startPan, endPan } = usePanGestureCount();
 
-  const prevScale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
   const scale = useSharedValue(1);
   const initialFocal = { x: useSharedValue(0), y: useSharedValue(0) };
-  const prevFocal = { x: useSharedValue(0), y: useSharedValue(0) };
+  const savedFocal = { x: useSharedValue(0), y: useSharedValue(0) };
   const focal = { x: useSharedValue(0), y: useSharedValue(0) };
-  const prevTranslate = { x: useSharedValue(0), y: useSharedValue(0) };
+  const savedTranslate = { x: useSharedValue(0), y: useSharedValue(0) };
   const translate = { x: useSharedValue(0), y: useSharedValue(0) };
 
   const { getInteractionId, updateInteractionId } = useInteractionId();
@@ -62,13 +66,12 @@ export const useGestures = ({
   const moveIntoView = () => {
     'worklet';
     if (scale.value > 1) {
-      const rightLimit = (width * (scale.value - 1)) / 2;
+      const rightLimit = limits.right(width, scale);
       const leftLimit = -rightLimit;
-      const totalTranslateX = translate.x.value + focal.x.value;
-
-      const bottomLimit = (height * (scale.value - 1)) / 2;
+      const bottomLimit = limits.bottom(height, scale);
       const topLimit = -bottomLimit;
-      const totalTranslateY = translate.y.value + focal.y.value;
+      const totalTranslateX = sum(translate.x, focal.x);
+      const totalTranslateY = sum(translate.y, focal.y);
 
       if (totalTranslateX > rightLimit) {
         translate.x.value = withTiming(rightLimit);
@@ -94,22 +97,22 @@ export const useGestures = ({
     'worklet';
     const interactionId = getInteractionId();
 
-    prevScale.value = 1;
+    savedScale.value = 1;
     scale.value = withTiming(1, undefined, (...args) =>
       onAnimationEnd(interactionId, ANIMATION_VALUE.SCALE, ...args)
     );
     initialFocal.x.value = 0;
     initialFocal.y.value = 0;
-    prevFocal.x.value = 0;
-    prevFocal.y.value = 0;
+    savedFocal.x.value = 0;
+    savedFocal.y.value = 0;
     focal.x.value = withTiming(0, undefined, (...args) =>
       onAnimationEnd(interactionId, ANIMATION_VALUE.FOCAL_X, ...args)
     );
     focal.y.value = withTiming(0, undefined, (...args) =>
       onAnimationEnd(interactionId, ANIMATION_VALUE.FOCAL_Y, ...args)
     );
-    prevTranslate.x.value = 0;
-    prevTranslate.y.value = 0;
+    savedTranslate.x.value = 0;
+    savedTranslate.y.value = 0;
     translate.x.value = withTiming(0, undefined, (...args) =>
       onAnimationEnd(interactionId, ANIMATION_VALUE.TRANSLATE_X, ...args)
     );
@@ -117,16 +120,16 @@ export const useGestures = ({
       onAnimationEnd(interactionId, ANIMATION_VALUE.TRANSLATE_Y, ...args)
     );
   }, [
-    prevScale,
+    savedScale,
     scale,
     initialFocal.x,
     initialFocal.y,
-    prevFocal.x,
-    prevFocal.y,
+    savedFocal.x,
+    savedFocal.y,
     focal.x,
     focal.y,
-    prevTranslate.x,
-    prevTranslate.y,
+    savedTranslate.x,
+    savedTranslate.y,
     translate.x,
     translate.y,
     getInteractionId,
@@ -142,7 +145,7 @@ export const useGestures = ({
   };
 
   const onInteractionEnded = () => {
-    if (isInteracting.current && !isPinching.current && !isPanning.current) {
+    if (isInteracting.current && !isPinching.current && !isPanning()) {
       if (isDoubleTapEnabled) {
         moveIntoView();
       } else {
@@ -167,12 +170,12 @@ export const useGestures = ({
 
   const onPanStarted: OnPanStartCallback = (event) => {
     onInteractionStarted();
-    isPanning.current = true;
+    startPan();
     onPanStart?.(event);
   };
 
   const onPanEnded: OnPanEndCallback = (...args) => {
-    isPanning.current = false;
+    endPan();
     onPanEnd?.(...args);
     onInteractionEnded();
   };
@@ -183,35 +186,69 @@ export const useGestures = ({
     .maxPointers(maxPanPointers)
     .onStart((event) => {
       runOnJS(onPanStarted)(event);
-      prevTranslate.x.value = translate.x.value;
-      prevTranslate.y.value = translate.y.value;
+      savedTranslate.x.value = translate.x.value;
+      savedTranslate.y.value = translate.y.value;
     })
     .onUpdate((event) => {
-      translate.x.value = prevTranslate.x.value + event.translationX;
-      translate.y.value = prevTranslate.y.value + event.translationY;
+      translate.x.value = savedTranslate.x.value + event.translationX;
+      translate.y.value = savedTranslate.y.value + event.translationY;
     })
-    .onEnd((...args) => {
-      runOnJS(onPanEnded)(...args);
+    .onEnd((event, success) => {
+      const rightLimit = limits.right(width, scale);
+      const leftLimit = -rightLimit;
+      const bottomLimit = limits.bottom(height, scale);
+      const topLimit = -bottomLimit;
+
+      if (scale.value > 1) {
+        translate.x.value = withDecay(
+          {
+            velocity: event.velocityX * 0.6,
+            rubberBandEffect: true,
+            rubberBandFactor: 0.9,
+            clamp: [leftLimit - focal.x.value, rightLimit - focal.x.value],
+          },
+          () => {
+            if (event.velocityX >= event.velocityY) {
+              runOnJS(onPanEnded)(event, success);
+            }
+          }
+        );
+        translate.y.value = withDecay(
+          {
+            velocity: event.velocityY * 0.6,
+            rubberBandEffect: true,
+            rubberBandFactor: 0.9,
+            clamp: [topLimit - focal.y.value, bottomLimit - focal.y.value],
+          },
+          () => {
+            if (event.velocityY > event.velocityX) {
+              runOnJS(onPanEnded)(event, success);
+            }
+          }
+        );
+      } else {
+        runOnJS(onPanEnded)(event, success);
+      }
     });
 
   const pinchGesture = Gesture.Pinch()
     .enabled(isPinchEnabled)
     .onStart((event) => {
       runOnJS(onPinchStarted)(event);
-      prevScale.value = scale.value;
-      prevFocal.x.value = focal.x.value;
-      prevFocal.y.value = focal.y.value;
+      savedScale.value = scale.value;
+      savedFocal.x.value = focal.x.value;
+      savedFocal.y.value = focal.y.value;
       initialFocal.x.value = event.focalX;
       initialFocal.y.value = event.focalY;
     })
     .onUpdate((event) => {
-      scale.value = clamp(prevScale.value * event.scale, minScale, maxScale);
+      scale.value = clamp(savedScale.value * event.scale, minScale, maxScale);
       focal.x.value =
-        prevFocal.x.value +
-        (center.x - initialFocal.x.value) * (scale.value - prevScale.value);
+        savedFocal.x.value +
+        (center.x - initialFocal.x.value) * (scale.value - savedScale.value);
       focal.y.value =
-        prevFocal.y.value +
-        (center.y - initialFocal.y.value) * (scale.value - prevScale.value);
+        savedFocal.y.value +
+        (center.y - initialFocal.y.value) * (scale.value - savedScale.value);
     })
     .onEnd((...args) => {
       runOnJS(onPinchEnded)(...args);
@@ -236,9 +273,8 @@ export const useGestures = ({
   const singleTapGesture = Gesture.Tap()
     .enabled(isSingleTapEnabled)
     .numberOfTaps(1)
-    .maxDuration(250)
-    .onStart(() => {
-      runOnJS(onSingleTap)();
+    .onStart((event) => {
+      runOnJS(onSingleTap)(event);
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -258,5 +294,5 @@ export const useGestures = ({
       ? Gesture.Race(tapGestures, pinchPanGestures)
       : pinchPanGestures;
 
-  return { gestures, animatedStyle };
+  return { gestures, animatedStyle, reset };
 };

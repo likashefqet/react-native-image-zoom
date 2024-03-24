@@ -164,6 +164,7 @@ export const useGestures = ({
 
   const onPinchEnded: OnPinchEndCallback = (...args) => {
     isPinching.current = false;
+    args.push(scale.value);
     onPinchEnd?.(...args);
     onInteractionEnded();
   };

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, View, Button } from 'react-native';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { ImageZoom } from '../../src';
+import { ImageZoom, ImageZoomRef, ZOOM_TYPE } from '../../src';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
 const imageUri = 'https://images.unsplash.com/photo-1596003906949-67221c37965c';
 
 function App() {
+  const imageZoomRef = useRef<ImageZoomRef>(null);
   const [isVisible, setVisible] = useState(true);
 
   const onAnimationStart = () => {
@@ -39,9 +40,14 @@ function App() {
   return (
     <SafeAreaView style={styles.container}>
       <ImageZoom
+        ref={imageZoomRef}
         uri={imageUri}
         minScale={0.5}
-        minPanPointers={2}
+        maxScale={5}
+        doubleTapScale={3}
+        minPanPointers={1}
+        isSingleTapEnabled
+        isDoubleTapEnabled
         onInteractionStart={() => {
           console.log('onInteractionStart');
           onAnimationStart();
@@ -51,6 +57,16 @@ function App() {
         onPanEnd={() => console.log('onPanEnd')}
         onPinchStart={() => console.log('onPinchStart')}
         onPinchEnd={() => console.log('onPinchEnd')}
+        onSingleTap={() => console.log('onSingleTap')}
+        onDoubleTap={(zoomType) => {
+          console.log('onDoubleTap', zoomType);
+          if (zoomType === ZOOM_TYPE.ZOOM_IN) {
+            onAnimationStart();
+            setTimeout(() => {
+              imageZoomRef.current?.reset();
+            }, 3000);
+          }
+        }}
         style={styles.image}
         onResetAnimationEnd={(finished) => {
           onAnimationEnd(finished);

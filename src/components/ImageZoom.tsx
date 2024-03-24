@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { forwardRef, ForwardRefRenderFunction } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
 import { useGestures } from '../hooks/useGestures';
 import { useImageLayout } from '../hooks/useImageLayout';
+import { useImageZoomHandle } from '../hooks/useImageZoomHandle';
 
-import type { ImageZoomProps } from '../types';
+import type { ImageZoomProps, ImageZoomRef } from '../types';
 
 const styles = StyleSheet.create({
   image: {
@@ -14,42 +15,58 @@ const styles = StyleSheet.create({
   },
 });
 
-const ImageZoom: React.FC<ImageZoomProps> = ({
-  uri = '',
-  minScale,
-  maxScale,
-  minPanPointers,
-  maxPanPointers,
-  isPanEnabled,
-  isPinchEnabled,
-  onInteractionStart,
-  onInteractionEnd,
-  onPinchStart,
-  onPinchEnd,
-  onPanStart,
-  onPanEnd,
-  onResetAnimationEnd,
-  onLayout,
-  style = {},
-  ...props
-}) => {
-  const { center, onImageLayout } = useImageLayout({ onLayout });
-  const { animatedStyle, gestures } = useGestures({
-    center,
+const ImageZoom: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
+  {
+    uri = '',
     minScale,
     maxScale,
+    doubleTapScale,
     minPanPointers,
     maxPanPointers,
     isPanEnabled,
     isPinchEnabled,
+    isSingleTapEnabled,
+    isDoubleTapEnabled,
     onInteractionStart,
     onInteractionEnd,
     onPinchStart,
     onPinchEnd,
     onPanStart,
     onPanEnd,
+    onSingleTap,
+    onDoubleTap,
+    onResetAnimationEnd,
+    onLayout,
+    style = {},
+    ...props
+  },
+  ref
+) => {
+  const { width, height, center, onImageLayout } = useImageLayout({ onLayout });
+  const { animatedStyle, gestures, reset } = useGestures({
+    width,
+    height,
+    center,
+    minScale,
+    maxScale,
+    doubleTapScale,
+    minPanPointers,
+    maxPanPointers,
+    isPanEnabled,
+    isPinchEnabled,
+    isSingleTapEnabled,
+    isDoubleTapEnabled,
+    onInteractionStart,
+    onInteractionEnd,
+    onPinchStart,
+    onPinchEnd,
+    onPanStart,
+    onPanEnd,
+    onSingleTap,
+    onDoubleTap,
     onResetAnimationEnd,
   });
+  useImageZoomHandle(ref, reset);
 
   return (
     <GestureDetector gesture={gestures}>
@@ -64,4 +81,4 @@ const ImageZoom: React.FC<ImageZoomProps> = ({
   );
 };
 
-export default ImageZoom;
+export default forwardRef(ImageZoom);

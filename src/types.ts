@@ -145,7 +145,10 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    */
   onDoubleTap?: OnDoubleTapCallback;
   /**
-   * A callback triggered when the image panning ends.
+   * A callback triggered upon the completion of the reset animation. It accepts two parameters: finished and values.
+   * The finished parameter evaluates to true if all animation values have successfully completed the reset animation;
+   * otherwise, it is false, indicating interruption by another gesture or unforeseen circumstances.
+   * The values parameter provides additional detailed information for each animation value.
    */
   onResetAnimationEnd?: OnResetAnimationEndCallback;
   /**

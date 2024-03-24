@@ -17,7 +17,8 @@ export type OnPinchStartCallback = (
 
 export type OnPinchEndCallback = (
   event: GestureStateChangeEvent<PinchGestureHandlerEventPayload>,
-  success: boolean
+  success: boolean,
+  scale: number
 ) => void;
 
 export type OnPanStartCallback = (

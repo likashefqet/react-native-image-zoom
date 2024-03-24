@@ -1,5 +1,48 @@
 import type { ImageSourcePropType } from 'react-native';
 import type { ImageProps } from 'expo-image';
+import type {
+  GestureStateChangeEvent,
+  PanGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
+import { AnimatableValue } from 'react-native-reanimated';
+
+export type OnPinchStartCallback = (
+  event: GestureStateChangeEvent<PinchGestureHandlerEventPayload>
+) => void;
+
+export type OnPinchEndCallback = (
+  event: GestureStateChangeEvent<PinchGestureHandlerEventPayload>,
+  success: boolean
+) => void;
+
+export type OnPanStartCallback = (
+  event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
+) => void;
+
+export type OnPanEndCallback = (
+  event: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+  success: boolean
+) => void;
+
+export enum ANIMATION_VALUE {
+  SCALE = 'SCALE',
+  FOCAL_X = 'FOCAL_X',
+  FOCAL_Y = 'FOCAL_Y',
+  TRANSLATE_X = 'TRANSLATE_X',
+  TRANSLATE_Y = 'TRANSLATE_Y',
+}
+
+export type OnResetAnimationEndCallback = (
+  finished?: boolean,
+  values?: Record<
+    ANIMATION_VALUE,
+    {
+      finished?: boolean;
+      current?: AnimatableValue;
+    }
+  >
+) => void;
 
 export type ImageZoomProps = Omit<ImageProps, 'source'> & {
   /**
@@ -40,27 +83,31 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
   /**
    * A callback triggered when the image interaction starts.
    */
-  onInteractionStart?: Function;
+  onInteractionStart?: () => void;
   /**
    * A callback triggered when the image interaction ends.
    */
-  onInteractionEnd?: Function;
+  onInteractionEnd?: () => void;
   /**
    * A callback triggered when the image pinching starts.
    */
-  onPinchStart?: Function;
+  onPinchStart?: OnPinchStartCallback;
   /**
    * A callback triggered when the image pinching ends.
    */
-  onPinchEnd?: Function;
+  onPinchEnd?: OnPinchEndCallback;
   /**
    * A callback triggered when the image panning starts.
    */
-  onPanStart?: Function;
+  onPanStart?: OnPanStartCallback;
   /**
    * A callback triggered when the image panning ends.
    */
-  onPanEnd?: Function;
+  onPanEnd?: OnPanEndCallback;
+  /**
+   * A callback triggered when the image panning ends.
+   */
+  onResetAnimationEnd?: OnResetAnimationEndCallback;
   /**
    * @see https://facebook.github.io/react-native/docs/image.html#source
    * @default undefined
@@ -101,4 +148,5 @@ export type ImageZoomUseGesturesProps = Pick<ImageZoomLayoutState, 'center'> &
     | 'onPinchEnd'
     | 'onPanStart'
     | 'onPanEnd'
+    | 'onResetAnimationEnd'
   >;

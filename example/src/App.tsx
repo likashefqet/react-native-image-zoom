@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, Button } from 'react-native';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { ImageZoom } from '../../src';
+import { ImageZoom, ZOOM_TYPE } from '../../src';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,7 +41,11 @@ function App() {
       <ImageZoom
         uri={imageUri}
         minScale={0.5}
+        maxScale={5}
+        doubleTapScale={3}
         minPanPointers={2}
+        isSingleTapEnabled
+        isDoubleTapEnabled
         onInteractionStart={() => {
           console.log('onInteractionStart');
           onAnimationStart();
@@ -51,6 +55,13 @@ function App() {
         onPanEnd={() => console.log('onPanEnd')}
         onPinchStart={() => console.log('onPinchStart')}
         onPinchEnd={() => console.log('onPinchEnd')}
+        onSingleTap={() => console.log('onSingleTap')}
+        onDoubleTap={(zoomType) => {
+          console.log('onDoubleTap', zoomType);
+          if (zoomType === ZOOM_TYPE.ZOOM_IN) {
+            onAnimationStart();
+          }
+        }}
         style={styles.image}
         onResetAnimationEnd={(finished) => {
           onAnimationEnd(finished);

@@ -1,7 +1,10 @@
+import { ForwardedRef } from 'react';
 import type {
   ImageProps,
   ImageSourcePropType,
+  LayoutChangeEvent,
   LayoutRectangle,
+  ViewProps,
 } from 'react-native';
 import type {
   GestureStateChangeEvent,
@@ -38,7 +41,14 @@ export enum ZOOM_TYPE {
   ZOOM_OUT = 'ZOOM_OUT',
 }
 
+export type ProgrammaticZoomCallback = (event: {
+  scale: number;
+  x: number;
+  y: number;
+}) => void;
+
 export type OnDoubleTapCallback = (zoomType: ZOOM_TYPE) => void;
+export type OnProgrammaticZoomCallback = (zoomType: ZOOM_TYPE) => void;
 
 export enum ANIMATION_VALUE {
   SCALE = 'SCALE',
@@ -59,12 +69,7 @@ export type OnResetAnimationEndCallback = (
   >
 ) => void;
 
-export type ImageZoomProps = Omit<ImageProps, 'source'> & {
-  /**
-   * The image's URI, which can be overridden by the `source` prop.
-   * @default ''
-   */
-  uri?: string;
+export type ZoomProps = {
   /**
    * The minimum scale allowed for zooming.
    * @default 1
@@ -76,7 +81,7 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    */
   maxScale?: number;
   /**
-   * The value of the image scale when a double-tap gesture is detected.
+   * The value of the scale when a double-tap gesture is detected.
    * @default 3
    */
   doubleTapScale?: number;
@@ -107,33 +112,33 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
   isSingleTapEnabled?: boolean;
   /**
    * Enables or disables the double tap feature.
-   * When enabled, this feature prevents automatic reset of the image zoom to its initial position, allowing continuous zooming.
+   * When enabled, this feature prevents automatic reset of the zoom to its initial position, allowing continuous zooming.
    * To return to the initial position, double tap again or zoom out to a scale level less than 1.
    * @default false
    */
   isDoubleTapEnabled?: boolean;
   /**
-   * A callback triggered when the image interaction starts.
+   * A callback triggered when the interaction starts.
    */
   onInteractionStart?: () => void;
   /**
-   * A callback triggered when the image interaction ends.
+   * A callback triggered when the interaction ends.
    */
   onInteractionEnd?: () => void;
   /**
-   * A callback triggered when the image pinching starts.
+   * A callback triggered when the pinching starts.
    */
   onPinchStart?: OnPinchStartCallback;
   /**
-   * A callback triggered when the image pinching ends.
+   * A callback triggered when the pinching ends.
    */
   onPinchEnd?: OnPinchEndCallback;
   /**
-   * A callback triggered when the image panning starts.
+   * A callback triggered when the panning starts.
    */
   onPanStart?: OnPanStartCallback;
   /**
-   * A callback triggered when the image panning ends.
+   * A callback triggered when the panning ends.
    */
   onPanEnd?: OnPanEndCallback;
   /**
@@ -145,43 +150,68 @@ export type ImageZoomProps = Omit<ImageProps, 'source'> & {
    */
   onDoubleTap?: OnDoubleTapCallback;
   /**
+   * A callback function that is invoked when a programmatic zoom event occurs.
+   */
+  onProgrammaticZoom?: OnProgrammaticZoomCallback;
+  /**
    * A callback triggered upon the completion of the reset animation. It accepts two parameters: finished and values.
    * The finished parameter evaluates to true if all animation values have successfully completed the reset animation;
    * otherwise, it is false, indicating interruption by another gesture or unforeseen circumstances.
    * The values parameter provides additional detailed information for each animation value.
    */
   onResetAnimationEnd?: OnResetAnimationEndCallback;
-  /**
-   * @see https://facebook.github.io/react-native/docs/image.html#source
-   * @default undefined
-   */
-  source?: ImageSourcePropType;
 };
 
-export type ImageZoomUseLayoutProps = Pick<ImageZoomProps, 'onLayout'>;
+export type ZoomableProps = ViewProps & ZoomProps;
 
-export type ImageZoomLayoutState = LayoutRectangle & {
+export type UseZoomableProps = ZoomProps & {
+  ref: ForwardedRef<ZoomableRef>;
   /**
-   * An object containing the x and y coordinates of the center point of the image, relative to the top-left corner of the container.
+   * Invoked on mount and layout changes with
+   *
+   * {nativeEvent: { layout: {x, y, width, height}}}.
+   */
+  onLayout?: ((event: LayoutChangeEvent) => void) | undefined;
+};
+
+export type ImageZoomProps = Omit<ImageProps, 'source'> &
+  ZoomProps & {
+    /**
+     * The image's URI, which can be overridden by the `source` prop.
+     * @default ''
+     */
+    uri?: string;
+    /**
+     * @see https://facebook.github.io/react-native/docs/image.html#source
+     * @default undefined
+     */
+    source?: ImageSourcePropType;
+  };
+
+export type ZoomableUseLayoutProps = Pick<ZoomableProps, 'onLayout'>;
+
+export type ZoomableLayoutState = LayoutRectangle & {
+  /**
+   * An object containing the x and y coordinates of the center point of the view, relative to the top-left corner of the container.
    */
   center: {
     /**
-     * The x-coordinate of the center point of the image.
+     * The x-coordinate of the center point of the view.
      */
     x: number;
     /**
-     * The y-coordinate of the center point of the image.
+     * The y-coordinate of the center point of the view.
      */
     y: number;
   };
 };
 
-export type ImageZoomUseGesturesProps = Pick<
-  ImageZoomLayoutState,
+export type ZoomableUseGesturesProps = Pick<
+  ZoomableLayoutState,
   'width' | 'height' | 'center'
 > &
   Pick<
-    ImageZoomProps,
+    ZoomableProps,
     | 'minScale'
     | 'maxScale'
     | 'doubleTapScale'
@@ -199,12 +229,19 @@ export type ImageZoomUseGesturesProps = Pick<
     | 'onPanEnd'
     | 'onSingleTap'
     | 'onDoubleTap'
+    | 'onProgrammaticZoom'
     | 'onResetAnimationEnd'
   >;
 
-export type ImageZoomRef = {
+export type ZoomableRef = {
   /**
-   * Resets the image zoom level to its original scale.
+   * Resets the zoom level to its original scale.
    */
   reset: () => void;
+  /**
+   * Triggers a zoom event to the specified coordinates (x, y) at the defined scale level.
+   */
+  zoom: ProgrammaticZoomCallback;
 };
+
+export type ImageZoomRef = ZoomableRef;

@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
+import type { ZoomableLayoutState, ZoomableUseLayoutProps } from '../types';
 
-import type { ImageZoomLayoutState, ImageZoomUseLayoutProps } from '../types';
-
-export const useImageLayout = ({ onLayout }: ImageZoomUseLayoutProps) => {
-  const [state, setState] = useState<ImageZoomLayoutState>({
+export const useZoomableLayout = ({ onLayout }: ZoomableUseLayoutProps) => {
+  const [state, setState] = useState<ZoomableLayoutState>({
     x: 0,
     y: 0,
     width: 0,
@@ -12,7 +11,7 @@ export const useImageLayout = ({ onLayout }: ImageZoomUseLayoutProps) => {
     center: { x: 0, y: 0 },
   });
 
-  const onImageLayout = (event: LayoutChangeEvent) => {
+  const onZoomableLayout = (event: LayoutChangeEvent) => {
     const { layout } = event.nativeEvent;
     const { x, y, width, height } = layout;
     const center = {
@@ -24,5 +23,5 @@ export const useImageLayout = ({ onLayout }: ImageZoomUseLayoutProps) => {
     setState({ ...layout, center });
   };
 
-  return { ...state, onImageLayout };
+  return { ...state, onZoomableLayout };
 };

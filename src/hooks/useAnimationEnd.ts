@@ -5,8 +5,7 @@ import {
   runOnJS,
   useSharedValue,
 } from 'react-native-reanimated';
-
-import { ANIMATION_VALUE, OnResetAnimationEndCallback } from '../types';
+import { ANIMATION_VALUE, type OnResetAnimationEndCallback } from '../types';
 
 export type OnAnimationEndCallback = AnimationCallback extends (
   ...a: infer I

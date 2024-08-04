@@ -3,17 +3,16 @@ import { StyleSheet } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useZoomable } from '../hooks/useZoomable';
-import type { ImageZoomProps, ImageZoomRef } from '../types';
+import type { ZoomableProps, ZoomableRef } from '../types';
 
 const styles = StyleSheet.create({
-  image: {
+  container: {
     flex: 1,
   },
 });
 
-const Zoomable: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
+const Zoomable: ForwardRefRenderFunction<ZoomableRef, ZoomableProps> = (
   {
-    uri = '',
     minScale,
     maxScale,
     doubleTapScale,
@@ -35,6 +34,7 @@ const Zoomable: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
     onResetAnimationEnd,
     onLayout,
     style = {},
+    children,
     ...props
   },
   ref
@@ -65,13 +65,13 @@ const Zoomable: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
 
   return (
     <GestureDetector gesture={gestures}>
-      <Animated.Image
-        style={[styles.image, style, animatedStyle]}
-        source={{ uri }}
-        resizeMode="contain"
+      <Animated.View
+        style={[styles.container, style, animatedStyle]}
         onLayout={onZoomableLayout}
         {...props}
-      />
+      >
+        {children}
+      </Animated.View>
     </GestureDetector>
   );
 };

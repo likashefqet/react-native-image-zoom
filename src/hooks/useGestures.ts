@@ -7,23 +7,21 @@ import {
   withDecay,
   withTiming,
 } from 'react-native-reanimated';
-
 import { clamp } from '../utils/clamp';
 import { limits } from '../utils/limits';
-import { sum } from '../utils/sum';
-import {
-  type ImageZoomUseGesturesProps,
-  type OnPanEndCallback,
-  type OnPanStartCallback,
-  type OnPinchEndCallback,
-  type OnPinchStartCallback,
-  ANIMATION_VALUE,
-  ZOOM_TYPE,
+import { ANIMATION_VALUE, ZOOM_TYPE } from '../types';
+import type {
+  OnPanEndCallback,
+  OnPanStartCallback,
+  OnPinchEndCallback,
+  OnPinchStartCallback,
+  ProgrammaticZoomCallback,
+  ZoomableUseGesturesProps,
 } from '../types';
-
-import { useInteractionId } from './useInteractionId';
 import { useAnimationEnd } from './useAnimationEnd';
+import { useInteractionId } from './useInteractionId';
 import { usePanGestureCount } from './usePanGestureCount';
+import { sum } from '../utils/sum';
 
 export const useGestures = ({
   width,
@@ -46,8 +44,9 @@ export const useGestures = ({
   onPanEnd,
   onSingleTap = () => {},
   onDoubleTap = () => {},
+  onProgrammaticZoom = () => {},
   onResetAnimationEnd,
-}: ImageZoomUseGesturesProps) => {
+}: ZoomableUseGesturesProps) => {
   const isInteracting = useRef(false);
   const isPinching = useRef(false);
   const { isPanning, startPan, endPan } = usePanGestureCount();
@@ -62,36 +61,6 @@ export const useGestures = ({
 
   const { getInteractionId, updateInteractionId } = useInteractionId();
   const { onAnimationEnd } = useAnimationEnd(onResetAnimationEnd);
-
-  const moveIntoView = () => {
-    'worklet';
-    if (scale.value > 1) {
-      const rightLimit = limits.right(width, scale);
-      const leftLimit = -rightLimit;
-      const bottomLimit = limits.bottom(height, scale);
-      const topLimit = -bottomLimit;
-      const totalTranslateX = sum(translate.x, focal.x);
-      const totalTranslateY = sum(translate.y, focal.y);
-
-      if (totalTranslateX > rightLimit) {
-        translate.x.value = withTiming(rightLimit);
-        focal.x.value = withTiming(0);
-      } else if (totalTranslateX < leftLimit) {
-        translate.x.value = withTiming(leftLimit);
-        focal.x.value = withTiming(0);
-      }
-
-      if (totalTranslateY > bottomLimit) {
-        translate.y.value = withTiming(bottomLimit);
-        focal.y.value = withTiming(0);
-      } else if (totalTranslateY < topLimit) {
-        translate.y.value = withTiming(topLimit);
-        focal.y.value = withTiming(0);
-      }
-    } else {
-      reset();
-    }
-  };
 
   const reset = useCallback(() => {
     'worklet';
@@ -135,6 +104,49 @@ export const useGestures = ({
     getInteractionId,
     onAnimationEnd,
   ]);
+
+  const moveIntoView = () => {
+    'worklet';
+    if (scale.value > 1) {
+      const rightLimit = limits.right(width, scale);
+      const leftLimit = -rightLimit;
+      const bottomLimit = limits.bottom(height, scale);
+      const topLimit = -bottomLimit;
+      const totalTranslateX = sum(translate.x, focal.x);
+      const totalTranslateY = sum(translate.y, focal.y);
+
+      if (totalTranslateX > rightLimit) {
+        translate.x.value = withTiming(rightLimit);
+        focal.x.value = withTiming(0);
+      } else if (totalTranslateX < leftLimit) {
+        translate.x.value = withTiming(leftLimit);
+        focal.x.value = withTiming(0);
+      }
+
+      if (totalTranslateY > bottomLimit) {
+        translate.y.value = withTiming(bottomLimit);
+        focal.y.value = withTiming(0);
+      } else if (totalTranslateY < topLimit) {
+        translate.y.value = withTiming(topLimit);
+        focal.y.value = withTiming(0);
+      }
+    } else {
+      reset();
+    }
+  };
+
+  const zoom: ProgrammaticZoomCallback = (event) => {
+    'worklet';
+    if (event.scale > 1) {
+      runOnJS(onProgrammaticZoom)(ZOOM_TYPE.ZOOM_IN);
+      scale.value = withTiming(event.scale);
+      focal.x.value = withTiming((center.x - event.x) * (event.scale - 1));
+      focal.y.value = withTiming((center.y - event.y) * (event.scale - 1));
+    } else {
+      runOnJS(onProgrammaticZoom)(ZOOM_TYPE.ZOOM_OUT);
+      reset();
+    }
+  };
 
   const onInteractionStarted = () => {
     if (!isInteracting.current) {
@@ -182,6 +194,8 @@ export const useGestures = ({
 
   const panGesture = Gesture.Pan()
     .enabled(isPanEnabled)
+    .averageTouches(true)
+    .enableTrackpadTwoFingerGesture(true)
     .minPointers(minPanPointers)
     .maxPointers(maxPanPointers)
     .onStart((event) => {
@@ -199,10 +213,11 @@ export const useGestures = ({
       const bottomLimit = limits.bottom(height, scale);
       const topLimit = -bottomLimit;
 
-      if (scale.value > 1) {
+      if (scale.value > 1 && isDoubleTapEnabled) {
         translate.x.value = withDecay(
           {
-            velocity: event.velocityX * 0.6,
+            velocity: event.velocityX,
+            velocityFactor: 0.6,
             rubberBandEffect: true,
             rubberBandFactor: 0.9,
             clamp: [leftLimit - focal.x.value, rightLimit - focal.x.value],
@@ -215,7 +230,8 @@ export const useGestures = ({
         );
         translate.y.value = withDecay(
           {
-            velocity: event.velocityY * 0.6,
+            velocity: event.velocityY,
+            velocityFactor: 0.6,
             rubberBandEffect: true,
             rubberBandFactor: 0.9,
             clamp: [topLimit - focal.y.value, bottomLimit - focal.y.value],
@@ -294,5 +310,5 @@ export const useGestures = ({
       ? Gesture.Race(tapGestures, pinchPanGestures)
       : pinchPanGestures;
 
-  return { gestures, animatedStyle, reset };
+  return { gestures, animatedStyle, zoom, reset };
 };

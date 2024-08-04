@@ -1,7 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Button } from 'react-native';
+import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { ImageZoom, ImageZoomRef, ZOOM_TYPE } from '../../src';
+import { ImageZoomRef } from '../../src';
+import ExpoImageZoom from './components/ExpoImageZoom';
+import ImageZoom from './components/ImageZoom';
+import safeAreaContextProviderHOC from './safeAreaContextProviderHOC';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   container: {
@@ -10,13 +14,42 @@ const styles = StyleSheet.create({
   image: {
     overflow: 'hidden',
   },
-  buttonContainer: {
+  button: {
     zIndex: 10,
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'yellow',
+    right: 8,
+    height: 40,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.64)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderWidth: 2,
+    borderRadius: 20,
+    borderColor: 'yellow',
+  },
+  zoomInButton: {
+    bottom: 48,
+  },
+  zoomOutButton: {
+    top: 48,
+  },
+  switchComponentButton: {
+    right: undefined,
+    left: 8,
+  },
+  circle: {
+    position: 'absolute',
+    top: 491,
+    left: 146,
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderRadius: 12,
+    borderColor: 'yellow',
+    transform: [{ translateX: -12 }, { translateY: -12 }],
+  },
+  buttonText: {
+    fontWeight: 'bold',
   },
 });
 
@@ -25,61 +58,60 @@ const imageUri = 'https://images.unsplash.com/photo-1596003906949-67221c37965c';
 
 function App() {
   const imageZoomRef = useRef<ImageZoomRef>(null);
-  const [isVisible, setVisible] = useState(true);
-
-  const onAnimationStart = () => {
-    setVisible(false);
-  };
-
-  const onAnimationEnd = (finished?: boolean) => {
-    if (finished) {
-      setVisible(true);
-    }
-  };
+  const { top, bottom } = useSafeAreaInsets();
+  const [useCustomComponent, setUseCustomComponent] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ImageZoom
-        ref={imageZoomRef}
-        uri={imageUri}
-        minScale={0.5}
-        maxScale={5}
-        doubleTapScale={3}
-        minPanPointers={1}
-        isSingleTapEnabled
-        isDoubleTapEnabled
-        onInteractionStart={() => {
-          console.log('onInteractionStart');
-          onAnimationStart();
-        }}
-        onInteractionEnd={() => console.log('onInteractionEnd')}
-        onPanStart={() => console.log('onPanStart')}
-        onPanEnd={() => console.log('onPanEnd')}
-        onPinchStart={() => console.log('onPinchStart')}
-        onPinchEnd={() => console.log('onPinchEnd')}
-        onSingleTap={() => console.log('onSingleTap')}
-        onDoubleTap={(zoomType) => {
-          console.log('onDoubleTap', zoomType);
-          if (zoomType === ZOOM_TYPE.ZOOM_IN) {
-            onAnimationStart();
-            setTimeout(() => {
-              imageZoomRef.current?.reset();
-            }, 3000);
-          }
-        }}
-        style={styles.image}
-        onResetAnimationEnd={(finished) => {
-          onAnimationEnd(finished);
-        }}
-        resizeMode="cover"
-      />
-      {isVisible && (
-        <View style={styles.buttonContainer}>
-          <Button title="BUTTON" />
-        </View>
+    <View style={styles.container}>
+      {useCustomComponent ? (
+        <ExpoImageZoom
+          ref={imageZoomRef}
+          uri={imageUri}
+          setIsZoomed={setIsZoomed}
+        />
+      ) : (
+        <ImageZoom
+          ref={imageZoomRef}
+          uri={imageUri}
+          setIsZoomed={setIsZoomed}
+        />
       )}
-    </SafeAreaView>
+      <Pressable
+        onPress={() => {
+          setUseCustomComponent((current) => !current);
+        }}
+        style={[styles.button, styles.switchComponentButton, { top: top + 16 }]}
+      >
+        <Text style={styles.buttonText}>
+          Use {useCustomComponent ? 'React Native Image' : 'Expo Image'}
+        </Text>
+      </Pressable>
+
+      {isZoomed ? (
+        <Pressable
+          onPress={() => {
+            imageZoomRef?.current?.reset();
+          }}
+          style={[styles.button, { top: top + 16 }]}
+        >
+          <Text style={styles.buttonText}>Zoom Out</Text>
+        </Pressable>
+      ) : (
+        <>
+          <View pointerEvents="none" style={styles.circle} />
+          <Pressable
+            onPress={() => {
+              imageZoomRef?.current?.zoom({ scale: 5, x: 146, y: 491 });
+            }}
+            style={[styles.button, { bottom: bottom + 16 }]}
+          >
+            <Text style={styles.buttonText}>Zoom In the 🟡 Circle</Text>
+          </Pressable>
+        </>
+      )}
+    </View>
   );
 }
 
-export default gestureHandlerRootHOC(App);
+export default safeAreaContextProviderHOC(gestureHandlerRootHOC(App));

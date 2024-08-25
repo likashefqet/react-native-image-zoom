@@ -22,9 +22,9 @@ Photo by <a href="https://unsplash.com/photos/XLqiL-rz4V8" title="Photo by Walli
 
 ## What's new
 
-- **Zoomable Component:** This component makes any child elements zoomable, ensuring they behave like the image zoom component. This is particularly useful when you need to replace the default image component with alternatives like Expo Image (see example) or Fast Image.
+- **Support for Scale Animated Value:** Added the ability to provide a Reanimated shared value for the scale property, allowing you to access and utilize the current zoom scale in your own code.
 
-- **Updated Ref Handle:** Customize the functionality further by utilizing the exposed `zoom` method. This method allows you to programmatically zoom in the image to a given point (x, y) at a given scale level.
+- **Return Last Values on Reset:** Updated the `onResetAnimationEnd` callback, which now returns the last zoom and position values when the component resets (zooms out), providing more control and feedback for custom logic.
 
 ## Features
 
@@ -42,13 +42,15 @@ Photo by <a href="https://unsplash.com/photos/XLqiL-rz4V8" title="Photo by Walli
 
 - **Interactive Callbacks:** The component provides interactive callbacks such as `onInteractionStart`, `onInteractionEnd`, `onPinchStart`, `onPinchEnd`, `onPanStart`, `onPanEnd`, `onSingleTap`, `onDoubleTap` and `onResetAnimationEnd` that allow you to handle image interactions.
 
-- **Ref Handle:** Customize the functionality further by utilizing the exposed `reset` method. This method allows you to programmatically reset the image zoom as a side effect to another user action or event, in addition to the default double tap and pinch functionalities.
+- **Ref Handle:** Customize the functionality further by utilizing the exposed `reset` and `zoom` methods. The 'reset' method allows you to programmatically reset the image zoom as a side effect to another user action or event, in addition to the default double tap and pinch functionalities. The 'zoom' method allows you to programmatically zoom in the image to a given point (x, y) at a given scale level.
 
 - **Reanimated Compatibility**: Compatible with `Reanimated v2` & `Reanimated v3`, providing optimized performance and smoother animations during image manipulations`.
 
 - **TypeScript Support:** Developed with `TypeScript` to enhance codebase maintainability and ensure type safety, reducing potential errors during development and refactoring processes
 
 - **Full React Native Image Props Support:** The component supports all React Native Image props, making it easy to integrate with existing code and utilize all the features that React Native Image provides.
+
+- **Zoomable Component:** This component makes any child elements zoomable, ensuring they behave like the image zoom component. This is particularly useful when you need to replace the default image component with alternatives like Expo Image (see example) or Fast Image.
 
 ## Getting Started
 
@@ -96,48 +98,11 @@ To use the `ImageZoom` component, simply pass the uri prop with the URL of the i
 
 ```javascript
 <ImageZoom
-  ref={imageZoomRef}
-  uri={imageUri}
-  minScale={0.5}
-  maxScale={5}
-  doubleTapScale={3}
-  minPanPointers={2}
-  isSingleTapEnabled
-  isDoubleTapEnabled
-  onInteractionStart={() => {
-    console.log('onInteractionStart');
-    onZoom();
-  }}
-  onInteractionEnd={() => console.log('onInteractionEnd')}
-  onPanStart={() => console.log('onPanStart')}
-  onPanEnd={() => console.log('onPanEnd')}
-  onPinchStart={() => console.log('onPinchStart')}
-  onPinchEnd={() => console.log('onPinchEnd')}
-  onSingleTap={() => console.log('onSingleTap')}
-  onDoubleTap={(zoomType) => {
-    console.log('onDoubleTap', zoomType);
-    onZoom(zoomType);
-  }}
-  onProgrammaticZoom={(zoomType) => {
-    console.log('onZoom', zoomType);
-    onZoom(zoomType);
-  }}
-  style={styles.image}
-  onResetAnimationEnd={(finished) => {
-    console.log('onResetAnimationEnd', finished);
-    onAnimationEnd(finished);
-  }}
-  resizeMode="cover"
-/>
-```
-
-### Zoomable with Expo Image Example
-
-```javascript
-<Zoomable
   ref={ref}
-  minScale={0.5}
-  maxScale={5}
+  uri={uri}
+  minScale={minScale}
+  maxScale={maxScale}
+  scale={scale}
   doubleTapScale={3}
   minPanPointers={1}
   isSingleTapEnabled
@@ -161,8 +126,49 @@ To use the `ImageZoom` component, simply pass the uri prop with the URL of the i
     onZoom(zoomType);
   }}
   style={styles.image}
-  onResetAnimationEnd={(finished) => {
+  onResetAnimationEnd={(finished, values) => {
     console.log('onResetAnimationEnd', finished);
+    console.log('lastScaleValue:', values?.SCALE.lastValue);
+    onAnimationEnd(finished);
+  }}
+  resizeMode="cover"
+/>
+```
+
+### Zoomable with Expo Image Example
+
+```javascript
+<Zoomable
+  ref={ref}
+  minScale={minScale}
+  maxScale={maxScale}
+  scale={scale}
+  doubleTapScale={3}
+  minPanPointers={1}
+  isSingleTapEnabled
+  isDoubleTapEnabled
+  onInteractionStart={() => {
+    console.log('onInteractionStart');
+    onZoom();
+  }}
+  onInteractionEnd={() => console.log('onInteractionEnd')}
+  onPanStart={() => console.log('onPanStart')}
+  onPanEnd={() => console.log('onPanEnd')}
+  onPinchStart={() => console.log('onPinchStart')}
+  onPinchEnd={() => console.log('onPinchEnd')}
+  onSingleTap={() => console.log('onSingleTap')}
+  onDoubleTap={(zoomType) => {
+    console.log('onDoubleTap', zoomType);
+    onZoom(zoomType);
+  }}
+  onProgrammaticZoom={(zoomType) => {
+    console.log('onZoom', zoomType);
+    onZoom(zoomType);
+  }}
+  style={styles.image}
+  onResetAnimationEnd={(finished, values) => {
+    console.log('onResetAnimationEnd', finished);
+    console.log('lastScaleValue:', values?.SCALE.lastValue);
     onAnimationEnd(finished);
   }}
 >

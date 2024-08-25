@@ -15,6 +15,7 @@ const Zoomable: ForwardRefRenderFunction<ZoomableRef, ZoomableProps> = (
   {
     minScale,
     maxScale,
+    scale,
     doubleTapScale,
     minPanPointers,
     maxPanPointers,
@@ -42,6 +43,7 @@ const Zoomable: ForwardRefRenderFunction<ZoomableRef, ZoomableProps> = (
   const { animatedStyle, gestures, onZoomableLayout } = useZoomable({
     minScale,
     maxScale,
+    scale,
     doubleTapScale,
     minPanPointers,
     maxPanPointers,

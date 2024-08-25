@@ -4,6 +4,7 @@ import React, {
   forwardRef,
 } from 'react';
 import { StyleSheet } from 'react-native';
+import { SharedValue } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { ZOOM_TYPE, Zoomable, ZoomableRef } from '../../../src';
 
@@ -15,6 +16,9 @@ const styles = StyleSheet.create({
 
 type ExpoImageZoomProps = {
   uri: string;
+  scale?: SharedValue<number>;
+  minScale?: number;
+  maxScale?: number;
   ref: ForwardedRef<ZoomableRef>;
   setIsZoomed: (value: boolean) => void;
 };
@@ -22,7 +26,7 @@ type ExpoImageZoomProps = {
 const ExpoImageZoom: ForwardRefRenderFunction<
   ZoomableRef,
   ExpoImageZoomProps
-> = ({ uri, setIsZoomed }, ref) => {
+> = ({ uri, scale, minScale = 0.5, maxScale = 5, setIsZoomed }, ref) => {
   const onZoom = (zoomType?: ZOOM_TYPE) => {
     if (!zoomType || zoomType === ZOOM_TYPE.ZOOM_IN) {
       setIsZoomed(true);
@@ -38,8 +42,9 @@ const ExpoImageZoom: ForwardRefRenderFunction<
   return (
     <Zoomable
       ref={ref}
-      minScale={0.5}
-      maxScale={5}
+      minScale={minScale}
+      maxScale={maxScale}
+      scale={scale}
       doubleTapScale={3}
       minPanPointers={1}
       isSingleTapEnabled
@@ -63,8 +68,9 @@ const ExpoImageZoom: ForwardRefRenderFunction<
         onZoom(zoomType);
       }}
       style={styles.image}
-      onResetAnimationEnd={(finished) => {
+      onResetAnimationEnd={(finished, values) => {
         console.log('onResetAnimationEnd', finished);
+        console.log('lastScaleValue:', values?.SCALE.lastValue);
         onAnimationEnd(finished);
       }}
     >

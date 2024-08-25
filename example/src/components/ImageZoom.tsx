@@ -4,6 +4,7 @@ import React, {
   forwardRef,
 } from 'react';
 import { StyleSheet } from 'react-native';
+import { SharedValue } from 'react-native-reanimated';
 import {
   ImageZoom as RNImagedZoom,
   ZOOM_TYPE,
@@ -18,11 +19,14 @@ const styles = StyleSheet.create({
 
 type ImageZoomProps = {
   uri: string;
+  scale?: SharedValue<number>;
+  minScale?: number;
+  maxScale?: number;
   ref: ForwardedRef<ImageZoomRef>;
   setIsZoomed: (value: boolean) => void;
 };
 const ImageZoom: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
-  { uri, setIsZoomed },
+  { uri, scale, minScale = 0.5, maxScale = 5, setIsZoomed },
   ref
 ) => {
   const onZoom = (zoomType?: ZOOM_TYPE) => {
@@ -41,8 +45,9 @@ const ImageZoom: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
     <RNImagedZoom
       ref={ref}
       uri={uri}
-      minScale={0.5}
-      maxScale={5}
+      minScale={minScale}
+      maxScale={maxScale}
+      scale={scale}
       doubleTapScale={3}
       minPanPointers={1}
       isSingleTapEnabled
@@ -66,8 +71,9 @@ const ImageZoom: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
         onZoom(zoomType);
       }}
       style={styles.image}
-      onResetAnimationEnd={(finished) => {
+      onResetAnimationEnd={(finished, values) => {
         console.log('onResetAnimationEnd', finished);
+        console.log('lastScaleValue:', values?.SCALE.lastValue);
         onAnimationEnd(finished);
       }}
       resizeMode="cover"

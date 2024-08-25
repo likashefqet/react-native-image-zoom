@@ -6,6 +6,7 @@ import type { UseZoomableProps } from '../types';
 export const useZoomable = ({
   minScale,
   maxScale,
+  scale,
   doubleTapScale,
   minPanPointers,
   maxPanPointers,
@@ -35,6 +36,7 @@ export const useZoomable = ({
     center,
     minScale,
     maxScale,
+    scale,
     doubleTapScale,
     minPanPointers,
     maxPanPointers,

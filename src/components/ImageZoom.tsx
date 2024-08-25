@@ -16,6 +16,7 @@ const Zoomable: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
     uri = '',
     minScale,
     maxScale,
+    scale,
     doubleTapScale,
     minPanPointers,
     maxPanPointers,
@@ -42,6 +43,7 @@ const Zoomable: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
   const { animatedStyle, gestures, onZoomableLayout } = useZoomable({
     minScale,
     maxScale,
+    scale,
     doubleTapScale,
     minPanPointers,
     maxPanPointers,

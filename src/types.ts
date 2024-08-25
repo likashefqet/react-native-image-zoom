@@ -12,7 +12,7 @@ import type {
   PinchGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
-import { AnimatableValue } from 'react-native-reanimated';
+import { AnimatableValue, SharedValue } from 'react-native-reanimated';
 
 export type OnPinchStartCallback = (
   event: GestureStateChangeEvent<PinchGestureHandlerEventPayload>
@@ -63,6 +63,7 @@ export type OnResetAnimationEndCallback = (
   values?: Record<
     ANIMATION_VALUE,
     {
+      lastValue: number;
       finished?: boolean;
       current?: AnimatableValue;
     }
@@ -80,6 +81,13 @@ export type ZoomProps = {
    * @default 5
    */
   maxScale?: number;
+  /**
+   * The `scale` property allows you to provide your own Reanimated shared value for scale.
+   * This shared value will be updated as the zoom level changes, enabling you to use the
+   * current scale in your own code.
+   * @default useSharedValue(1)
+   */
+  scale?: SharedValue<number>;
   /**
    * The value of the scale when a double-tap gesture is detected.
    * @default 3
@@ -214,6 +222,7 @@ export type ZoomableUseGesturesProps = Pick<
     ZoomableProps,
     | 'minScale'
     | 'maxScale'
+    | 'scale'
     | 'doubleTapScale'
     | 'minPanPointers'
     | 'maxPanPointers'

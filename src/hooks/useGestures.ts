@@ -29,6 +29,7 @@ export const useGestures = ({
   center,
   minScale = 1,
   maxScale = 5,
+  scale: scaleValue,
   doubleTapScale = 3,
   minPanPointers = 2,
   maxPanPointers = 2,
@@ -52,7 +53,8 @@ export const useGestures = ({
   const { isPanning, startPan, endPan } = usePanGestureCount();
 
   const savedScale = useSharedValue(1);
-  const scale = useSharedValue(1);
+  const internalScaleValue = useSharedValue(1);
+  const scale = scaleValue ?? internalScaleValue;
   const initialFocal = { x: useSharedValue(0), y: useSharedValue(0) };
   const savedFocal = { x: useSharedValue(0), y: useSharedValue(0) };
   const focal = { x: useSharedValue(0), y: useSharedValue(0) };
@@ -67,26 +69,56 @@ export const useGestures = ({
     const interactionId = getInteractionId();
 
     savedScale.value = 1;
+    const lastScaleValue = scale.value;
     scale.value = withTiming(1, undefined, (...args) =>
-      onAnimationEnd(interactionId, ANIMATION_VALUE.SCALE, ...args)
+      onAnimationEnd(
+        interactionId,
+        ANIMATION_VALUE.SCALE,
+        lastScaleValue,
+        ...args
+      )
     );
     initialFocal.x.value = 0;
     initialFocal.y.value = 0;
     savedFocal.x.value = 0;
     savedFocal.y.value = 0;
+    const lastFocalXValue = focal.x.value;
     focal.x.value = withTiming(0, undefined, (...args) =>
-      onAnimationEnd(interactionId, ANIMATION_VALUE.FOCAL_X, ...args)
+      onAnimationEnd(
+        interactionId,
+        ANIMATION_VALUE.FOCAL_X,
+        lastFocalXValue,
+        ...args
+      )
     );
+    const lastFocalYValue = focal.y.value;
     focal.y.value = withTiming(0, undefined, (...args) =>
-      onAnimationEnd(interactionId, ANIMATION_VALUE.FOCAL_Y, ...args)
+      onAnimationEnd(
+        interactionId,
+        ANIMATION_VALUE.FOCAL_Y,
+        lastFocalYValue,
+        ...args
+      )
     );
     savedTranslate.x.value = 0;
     savedTranslate.y.value = 0;
+    const lastTranslateXValue = translate.x.value;
     translate.x.value = withTiming(0, undefined, (...args) =>
-      onAnimationEnd(interactionId, ANIMATION_VALUE.TRANSLATE_X, ...args)
+      onAnimationEnd(
+        interactionId,
+        ANIMATION_VALUE.TRANSLATE_X,
+        lastTranslateXValue,
+        ...args
+      )
     );
+    const lastTranslateYValue = translate.y.value;
     translate.y.value = withTiming(0, undefined, (...args) =>
-      onAnimationEnd(interactionId, ANIMATION_VALUE.TRANSLATE_Y, ...args)
+      onAnimationEnd(
+        interactionId,
+        ANIMATION_VALUE.TRANSLATE_Y,
+        lastTranslateYValue,
+        ...args
+      )
     );
   }, [
     savedScale,

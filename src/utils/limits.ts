@@ -2,7 +2,7 @@ import { SharedValue } from 'react-native-reanimated';
 
 const right = (width: number, scale: SharedValue<number>) => {
   'worklet';
-  return (width * (scale.value - 1)) / 2;
+  return (width * (scale.value - 1)) / 1.7;
 };
 
 const left = (width: number, scale: SharedValue<number>) => {
@@ -12,7 +12,7 @@ const left = (width: number, scale: SharedValue<number>) => {
 
 const bottom = (height: number, scale: SharedValue<number>) => {
   'worklet';
-  return (height * (scale.value - 1)) / 2;
+  return (height * (scale.value - 1)) / 1.3;
 };
 
 const top = (height: number, scale: SharedValue<number>) => {

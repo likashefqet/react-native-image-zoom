@@ -4,29 +4,29 @@ import React, {
   forwardRef,
 } from 'react';
 import { StyleSheet } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
+import { FadeIn, FadeOut, Layout, SharedValue } from 'react-native-reanimated';
 import {
   ImageZoom as RNImagedZoom,
   ZOOM_TYPE,
   ImageZoomRef,
+  ImageZoomProps,
 } from '../../../src';
 
 const styles = StyleSheet.create({
-  image: {
-    flex: 1,
-  },
+  image: { flex: 1 },
 });
 
-type ImageZoomProps = {
+type Props = {
   uri: string;
   scale?: SharedValue<number>;
   minScale?: number;
   maxScale?: number;
   ref: ForwardedRef<ImageZoomRef>;
   setIsZoomed: (value: boolean) => void;
+  style?: ImageZoomProps['style'];
 };
-const ImageZoom: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
-  { uri, scale, minScale = 0.5, maxScale = 5, setIsZoomed },
+const ImageZoom: ForwardRefRenderFunction<ImageZoomRef, Props> = (
+  { uri, scale, minScale = 0.5, maxScale = 5, setIsZoomed, style },
   ref
 ) => {
   const onZoom = (zoomType?: ZOOM_TYPE) => {
@@ -43,13 +43,15 @@ const ImageZoom: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
 
   return (
     <RNImagedZoom
+      entering={FadeIn}
+      exiting={FadeOut}
+      layout={Layout}
       ref={ref}
       uri={uri}
       minScale={minScale}
       maxScale={maxScale}
       scale={scale}
       doubleTapScale={3}
-      minPanPointers={1}
       isSingleTapEnabled
       isDoubleTapEnabled
       onInteractionStart={() => {
@@ -70,7 +72,7 @@ const ImageZoom: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
         console.log('onZoom', zoomType);
         onZoom(zoomType);
       }}
-      style={styles.image}
+      style={[styles.image, style]}
       onResetAnimationEnd={(finished, values) => {
         console.log('onResetAnimationEnd', finished);
         console.log('lastScaleValue:', values?.SCALE.lastValue);

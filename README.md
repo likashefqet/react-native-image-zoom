@@ -22,9 +22,14 @@ Photo by <a href="https://unsplash.com/photos/XLqiL-rz4V8" title="Photo by Walli
 
 ## What's new
 
-- **Support for Scale Animated Value:** Added the ability to provide a Reanimated shared value for the scale property, allowing you to access and utilize the current zoom scale in your own code.
+- **Enhanced Pan Gesture Handling:** Improved the accuracy and responsiveness of pan gestures, ensuring smoother and more natural interactions when panning images.
 
-- **Return Last Values on Reset:** Updated the `onResetAnimationEnd` callback, which now returns the last zoom and position values when the component resets (zooms out), providing more control and feedback for custom logic.
+- **Refined Single Tap Detection:** The single tap gesture functionality has been enhanced to trigger more reliably, providing better consistency and control without interfering with other gestures.
+
+- **Updated Example Integration:**
+  - Added new examples demonstrating how to leverage the scale value for custom animation effects.
+  - Provided an example showcasing how to integrate the Image Zoom Component with react-native-reanimated-carousel, allowing for animated, zoomable image carousels.
+- **TypeScript Support for Animated Props:** Expanded TypeScript definitions to include support for animated props, ensuring better type safety and compatibility with Reanimated-based animations.
 
 ## Features
 
@@ -38,9 +43,13 @@ Photo by <a href="https://unsplash.com/photos/XLqiL-rz4V8" title="Photo by Walli
 
 - **Customizable Zoom Settings:** Utilize `minScale`, `maxScale`, and `doubleTapScale` props for precise control over minimum, maximum, and double tap zoom levels, tailoring the zoom behavior to application requirements
 
-- **Customizable Functionality:** Fine-tune the component's behavior with `minPanPointers` and `maxPanPointers` props to define the range of pointers necessary for pan gesture detection. Enable or disable features such as panning (`isPanEnabled`), pinching (`isPinchEnabled`), single tap handling (`isSingleTapEnabled`), and double tap zoom (`isDoubleTapEnabled`) based on specific application needs.
+- **Customizable Functionality:** Enable or disable features such as panning (`isPanEnabled`), pinching (`isPinchEnabled`), single tap handling (`isSingleTapEnabled`), and double tap zoom (`isDoubleTapEnabled`) based on specific application needs.
+
+- **Access Scale Animated Value:** Provide a Reanimated shared value for the scale property, allowing you to access and utilize the current zoom scale in your own code.
 
 - **Interactive Callbacks:** The component provides interactive callbacks such as `onInteractionStart`, `onInteractionEnd`, `onPinchStart`, `onPinchEnd`, `onPanStart`, `onPanEnd`, `onSingleTap`, `onDoubleTap` and `onResetAnimationEnd` that allow you to handle image interactions.
+
+- **Access Last Values on Reset:** The `onResetAnimationEnd` callback returns the last zoom and position values when the component resets (zooms out), providing more control and feedback for custom logic.
 
 - **Ref Handle:** Customize the functionality further by utilizing the exposed `reset` and `zoom` methods. The 'reset' method allows you to programmatically reset the image zoom as a side effect to another user action or event, in addition to the default double tap and pinch functionalities. The 'zoom' method allows you to programmatically zoom in the image to a given point (x, y) at a given scale level.
 
@@ -104,7 +113,6 @@ To use the `ImageZoom` component, simply pass the uri prop with the URL of the i
   maxScale={maxScale}
   scale={scale}
   doubleTapScale={3}
-  minPanPointers={1}
   isSingleTapEnabled
   isDoubleTapEnabled
   onInteractionStart={() => {
@@ -144,7 +152,6 @@ To use the `ImageZoom` component, simply pass the uri prop with the URL of the i
   maxScale={maxScale}
   scale={scale}
   doubleTapScale={3}
-  minPanPointers={1}
   isSingleTapEnabled
   isDoubleTapEnabled
   onInteractionStart={() => {
@@ -188,7 +195,6 @@ All `React Native Image Props` &
 | minScale            | Number   | `1`                 | The minimum scale allowed for zooming.                                                                                                                                                                                                                                                                                                                                                                                             |
 | maxScale            | Number   | `5`                 | The maximum scale allowed for zooming.                                                                                                                                                                                                                                                                                                                                                                                             |
 | doubleTapScale      | Number   | `3`                 | The value of the image scale when a double-tap gesture is detected.                                                                                                                                                                                                                                                                                                                                                                |
-| minPanPointers      | Number   | `2`                 | The minimum number of pointers required to enable panning.                                                                                                                                                                                                                                                                                                                                                                         |
 | maxPanPointers      | Number   | `2`                 | The maximum number of pointers required to enable panning.                                                                                                                                                                                                                                                                                                                                                                         |
 | isPanEnabled        | Boolean  | `true`              | Determines whether panning is enabled within the range of the minimum and maximum pan pointers.                                                                                                                                                                                                                                                                                                                                    |
 | isPinchEnabled      | Boolean  | `true`              | Determines whether pinching is enabled.                                                                                                                                                                                                                                                                                                                                                                                            |

@@ -19,7 +19,10 @@ export const useZoomableLayout = ({ onLayout }: ZoomableUseLayoutProps) => {
       y: y + height / 2,
     };
 
-    onLayout?.(event);
+    if (typeof onLayout === 'function') {
+      onLayout(event);
+    }
+
     setState({ ...layout, center });
   };
 

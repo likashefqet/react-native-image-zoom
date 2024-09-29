@@ -2,7 +2,6 @@ import { ForwardedRef } from 'react';
 import type {
   ImageProps,
   ImageSourcePropType,
-  LayoutChangeEvent,
   LayoutRectangle,
   ViewProps,
 } from 'react-native';
@@ -12,7 +11,11 @@ import type {
   PinchGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
-import { AnimatableValue, SharedValue } from 'react-native-reanimated';
+import {
+  AnimatableValue,
+  AnimateProps,
+  SharedValue,
+} from 'react-native-reanimated';
 
 export type OnPinchStartCallback = (
   event: GestureStateChangeEvent<PinchGestureHandlerEventPayload>
@@ -94,11 +97,6 @@ export type ZoomProps = {
    */
   doubleTapScale?: number;
   /**
-   * The minimum number of pointers required to enable panning.
-   * @default 2
-   */
-  minPanPointers?: number;
-  /**
    * The maximum number of pointers required to enable panning.
    * @default 2
    */
@@ -170,7 +168,7 @@ export type ZoomProps = {
   onResetAnimationEnd?: OnResetAnimationEndCallback;
 };
 
-export type ZoomableProps = ViewProps & ZoomProps;
+export type ZoomableProps = AnimateProps<ViewProps> & ZoomProps;
 
 export type UseZoomableProps = ZoomProps & {
   ref: ForwardedRef<ZoomableRef>;
@@ -179,10 +177,10 @@ export type UseZoomableProps = ZoomProps & {
    *
    * {nativeEvent: { layout: {x, y, width, height}}}.
    */
-  onLayout?: ((event: LayoutChangeEvent) => void) | undefined;
+  onLayout?: ZoomableProps['onLayout'];
 };
 
-export type ImageZoomProps = Omit<ImageProps, 'source'> &
+export type ImageZoomProps = Omit<AnimateProps<ImageProps>, 'source'> &
   ZoomProps & {
     /**
      * The image's URI, which can be overridden by the `source` prop.
@@ -224,7 +222,6 @@ export type ZoomableUseGesturesProps = Pick<
     | 'maxScale'
     | 'scale'
     | 'doubleTapScale'
-    | 'minPanPointers'
     | 'maxPanPointers'
     | 'isPanEnabled'
     | 'isPinchEnabled'

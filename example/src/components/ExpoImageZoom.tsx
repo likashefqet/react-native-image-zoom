@@ -4,29 +4,38 @@ import React, {
   forwardRef,
 } from 'react';
 import { StyleSheet } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  Layout,
+  SharedValue,
+} from 'react-native-reanimated';
 import { Image } from 'expo-image';
-import { ZOOM_TYPE, Zoomable, ZoomableRef } from '../../../src';
+import { ZOOM_TYPE, Zoomable, ZoomableProps, ZoomableRef } from '../../../src';
+
+const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 const styles = StyleSheet.create({
   image: {
     flex: 1,
+    overflow: 'hidden',
   },
 });
 
-type ExpoImageZoomProps = {
+type Props = {
   uri: string;
   scale?: SharedValue<number>;
   minScale?: number;
   maxScale?: number;
   ref: ForwardedRef<ZoomableRef>;
   setIsZoomed: (value: boolean) => void;
+  style?: ZoomableProps['style'];
 };
 
-const ExpoImageZoom: ForwardRefRenderFunction<
-  ZoomableRef,
-  ExpoImageZoomProps
-> = ({ uri, scale, minScale = 0.5, maxScale = 5, setIsZoomed }, ref) => {
+const ExpoImageZoom: ForwardRefRenderFunction<ZoomableRef, Props> = (
+  { uri, scale, minScale = 0.5, maxScale = 5, setIsZoomed, style },
+  ref
+) => {
   const onZoom = (zoomType?: ZOOM_TYPE) => {
     if (!zoomType || zoomType === ZOOM_TYPE.ZOOM_IN) {
       setIsZoomed(true);
@@ -42,11 +51,13 @@ const ExpoImageZoom: ForwardRefRenderFunction<
   return (
     <Zoomable
       ref={ref}
+      entering={FadeIn}
+      exiting={FadeOut}
+      layout={Layout}
       minScale={minScale}
       maxScale={maxScale}
       scale={scale}
       doubleTapScale={3}
-      minPanPointers={1}
       isSingleTapEnabled
       isDoubleTapEnabled
       onInteractionStart={() => {
@@ -67,14 +78,28 @@ const ExpoImageZoom: ForwardRefRenderFunction<
         console.log('onZoom', zoomType);
         onZoom(zoomType);
       }}
-      style={styles.image}
+      style={[styles.image, style]}
       onResetAnimationEnd={(finished, values) => {
         console.log('onResetAnimationEnd', finished);
         console.log('lastScaleValue:', values?.SCALE.lastValue);
         onAnimationEnd(finished);
       }}
     >
-      <Image style={styles.image} source={{ uri }} contentFit="cover" />
+      <AnimatedImage
+        entering={FadeIn}
+        exiting={FadeOut}
+        layout={Layout}
+        style={styles.image}
+        source={{ uri }}
+        contentFit="cover"
+      />
+      {/* Without Layout Animations
+        <Image
+          style={styles.image}
+          source={{ uri }}
+          contentFit="cover"
+        />
+      */}
     </Zoomable>
   );
 };

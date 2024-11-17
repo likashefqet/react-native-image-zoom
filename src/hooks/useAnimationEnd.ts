@@ -66,7 +66,7 @@ export const useAnimationEnd = (
         }
       }
     },
-    [onResetAnimationEnd, endValues.value]
+    [onResetAnimationEnd, endValues]
   );
 
   return { onAnimationEnd };

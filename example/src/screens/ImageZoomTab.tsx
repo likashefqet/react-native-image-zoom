@@ -38,9 +38,12 @@ export const ImageZoomTab = () => {
     imageZoomRef?.current?.reset();
   };
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    borderRadius: 30 / scale.value,
-  }));
+  const animatedStyle = useAnimatedStyle(
+    () => ({
+      borderRadius: 30 / scale.value,
+    }),
+    [scale]
+  );
 
   return (
     <View style={styles.container}>

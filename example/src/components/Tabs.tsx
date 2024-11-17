@@ -56,7 +56,7 @@ type TabsProps = {
 
 export const Tabs = ({ tabs, isMenuVisible, renderMenu }: TabsProps) => {
   const { bottom } = useSafeAreaInsets();
-  const [activeIndex, setActiveIndex] = useState(2);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   return (
     <>

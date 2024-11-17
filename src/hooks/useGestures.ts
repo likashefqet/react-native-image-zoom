@@ -403,15 +403,18 @@ export const useGestures = ({
       runOnJS(onSingleTap)(event);
     });
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translate.x.value },
-      { translateY: translate.y.value },
-      { translateX: focal.x.value },
-      { translateY: focal.y.value },
-      { scale: scale.value },
-    ],
-  }));
+  const animatedStyle = useAnimatedStyle(
+    () => ({
+      transform: [
+        { translateX: translate.x.value },
+        { translateY: translate.y.value },
+        { translateX: focal.x.value },
+        { translateY: focal.y.value },
+        { scale: scale.value },
+      ],
+    }),
+    [translate.x, translate.y, focal.x, focal.y, scale]
+  );
 
   const pinchPanGestures = Gesture.Simultaneous(
     pinchGesture,

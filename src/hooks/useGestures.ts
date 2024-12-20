@@ -13,6 +13,7 @@ import { clamp } from '../utils/clamp';
 import { limits } from '../utils/limits';
 import { ANIMATION_VALUE, ZOOM_TYPE } from '../types';
 import type {
+  GetInfoCallback,
   OnPanEndCallback,
   OnPanStartCallback,
   OnPinchEndCallback,
@@ -416,6 +417,33 @@ export const useGestures = ({
     [translate.x, translate.y, focal.x, focal.y, scale]
   );
 
+  const getInfo: GetInfoCallback = () => {
+    const totalTranslateX = translate.x.value + focal.x.value;
+    const totalTranslateY = translate.y.value + focal.y.value;
+    return {
+      container: {
+        width,
+        height,
+        center,
+      },
+      scaledSize: {
+        width: width * scale.value,
+        height: height * scale.value,
+      },
+      visibleArea: {
+        x: Math.abs(totalTranslateX - (width * (scale.value - 1)) / 2),
+        y: Math.abs(totalTranslateY - (height * (scale.value - 1)) / 2),
+        width,
+        height,
+      },
+      transformations: {
+        translateX: totalTranslateX,
+        translateY: totalTranslateY,
+        scale: scale.value,
+      },
+    };
+  };
+
   const pinchPanGestures = Gesture.Simultaneous(
     pinchGesture,
     panWhilePinchingGesture
@@ -426,5 +454,5 @@ export const useGestures = ({
       ? Gesture.Race(pinchPanGestures, panOnlyGesture, tapGestures)
       : pinchPanGestures;
 
-  return { gestures, animatedStyle, zoom, reset };
+  return { gestures, animatedStyle, zoom, reset, getInfo };
 };

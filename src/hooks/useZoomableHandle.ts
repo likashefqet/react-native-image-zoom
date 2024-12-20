@@ -1,10 +1,15 @@
 import { Ref, useImperativeHandle } from 'react';
-import type { ProgrammaticZoomCallback, ZoomableRef } from '../types';
+import type {
+  GetInfoCallback,
+  ProgrammaticZoomCallback,
+  ZoomableRef,
+} from '../types';
 
 export const useZoomableHandle = (
   ref: Ref<unknown> | undefined,
   reset: () => void,
-  zoom: ProgrammaticZoomCallback
+  zoom: ProgrammaticZoomCallback,
+  getInfo: GetInfoCallback
 ) => {
   useImperativeHandle(
     ref,
@@ -15,7 +20,10 @@ export const useZoomableHandle = (
       zoom(event) {
         zoom(event);
       },
+      getInfo() {
+        return getInfo();
+      },
     }),
-    [reset, zoom]
+    [reset, zoom, getInfo]
   );
 };

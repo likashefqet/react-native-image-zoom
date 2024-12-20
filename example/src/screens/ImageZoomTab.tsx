@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { StyleSheet, View, Pressable, Text, Alert } from 'react-native';
 import Animated, {
   useSharedValue,
   FadeIn,
@@ -36,6 +36,11 @@ export const ImageZoomTab = () => {
   };
   const zoomOut = () => {
     imageZoomRef?.current?.reset();
+  };
+
+  const getInfo = () => {
+    const info = imageZoomRef?.current?.getInfo();
+    Alert.alert('Info', JSON.stringify(info, null, 2));
   };
 
   const animatedStyle = useAnimatedStyle(
@@ -92,6 +97,15 @@ export const ImageZoomTab = () => {
           </AnimatedPressable>
         </>
       )}
+      <AnimatedPressable
+        onPress={getInfo}
+        entering={FadeIn}
+        exiting={FadeOut}
+        layout={Layout}
+        style={[styles.button, styles.leftButton, { bottom: bottom + 64 }]}
+      >
+        <Text style={styles.buttonText}>Info</Text>
+      </AnimatedPressable>
     </View>
   );
 };

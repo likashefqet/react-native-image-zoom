@@ -53,6 +53,29 @@ export type ProgrammaticZoomCallback = (event: {
 export type OnDoubleTapCallback = (zoomType: ZOOM_TYPE) => void;
 export type OnProgrammaticZoomCallback = (zoomType: ZOOM_TYPE) => void;
 
+export type GetInfoCallback = () => {
+  container: {
+    width: number;
+    height: number;
+    center: { x: number; y: number };
+  };
+  scaledSize: {
+    width: number;
+    height: number;
+  };
+  visibleArea: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  transformations: {
+    translateX: number;
+    translateY: number;
+    scale: number;
+  };
+};
+
 export enum ANIMATION_VALUE {
   SCALE = 'SCALE',
   FOCAL_X = 'FOCAL_X',
@@ -248,6 +271,29 @@ export type ZoomableRef = {
    * Triggers a zoom event to the specified coordinates (x, y) at the defined scale level.
    */
   zoom: ProgrammaticZoomCallback;
+  /**
+   * Retrieves detailed information about the zoomable component, including container dimensions,
+   * scaled size, visible area (relative to the scaled component), and transformation values.
+   *
+   * @returns An object containing:
+   * - `container`: The original container's dimensions and center point.
+   *   - `width`: The width of the container.
+   *   - `height`: The height of the container.
+   *   - `center`: The center coordinates of the container.
+   * - `scaledSize`: The dimensions of the component after applying the current scale.
+   *   - `width`: The scaled width.
+   *   - `height`: The scaled height.
+   * - `visibleArea`: The visible region of the scaled component.
+   *   - `x`: The x-coordinate of the top-left corner of the visible area (relative to the scaled component).
+   *   - `y`: The y-coordinate of the top-left corner of the visible area (relative to the scaled component).
+   *   - `width`: The width of the visible area (matches container width).
+   *   - `height`: The height of the visible area (matches container height).
+   * - `transformations`: The current transformation values.
+   *   - `translateX`: The horizontal translation value (including focal point adjustment).
+   *   - `translateY`: The vertical translation value (including focal point adjustment).
+   *   - `scale`: The current scale factor.
+   */
+  getInfo: GetInfoCallback;
 };
 
 export type ImageZoomRef = ZoomableRef;

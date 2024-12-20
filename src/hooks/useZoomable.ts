@@ -29,7 +29,7 @@ export const useZoomable = ({
   const { width, height, center, onZoomableLayout } = useZoomableLayout({
     onLayout,
   });
-  const { animatedStyle, gestures, reset, zoom } = useGestures({
+  const { animatedStyle, gestures, reset, zoom, getInfo } = useGestures({
     width,
     height,
     center,
@@ -53,7 +53,7 @@ export const useZoomable = ({
     onProgrammaticZoom,
     onResetAnimationEnd,
   });
-  useZoomableHandle(ref, reset, zoom);
+  useZoomableHandle(ref, reset, zoom, getInfo);
 
   return { animatedStyle, gestures, onZoomableLayout };
 };

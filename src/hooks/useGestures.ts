@@ -371,7 +371,12 @@ export const useGestures = ({
         (center.y - initialFocal.y.value) * (scale.value - savedScale.value);
     })
     .onEnd((...args) => {
-      runOnJS(onPinchEnded)(...args);
+      const argsWithScale = {
+        ...args[0],
+        finalScalePosition: scale.value
+      };
+
+      runOnJS(onPinchEnded)(argsWithScale);
     });
 
   const doubleTapGesture = Gesture.Tap()

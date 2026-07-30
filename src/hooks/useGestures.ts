@@ -20,7 +20,6 @@ import { getLimits } from '../utils/limits';
 import { ANIMATION_VALUE, ZOOM_TYPE } from '../types';
 import type {
   GetInfoCallback,
-  OnPanEndCallback,
   OnPanStartCallback,
   OnPinchEndCallback,
   OnPinchStartCallback,
@@ -172,12 +171,14 @@ export const useGestures = ({
     }
   };
 
-  const onInteractionEnded = () => {
+  const onInteractionEnded = (shouldSnapBack = true) => {
     if (isInteracting.current && !isPinching.current && !isPanning()) {
-      if (isDoubleTapEnabled) {
-        moveIntoView();
-      } else {
-        reset();
+      if (shouldSnapBack) {
+        if (isDoubleTapEnabled) {
+          moveIntoView();
+        } else {
+          reset();
+        }
       }
       isInteracting.current = false;
       onInteractionEnd?.();
@@ -202,10 +203,14 @@ export const useGestures = ({
     onPanStart?.(event);
   };
 
-  const onPanEnded: OnPanEndCallback = (...args) => {
+  const onPanEnded = (
+    event: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+    success: boolean,
+    shouldSnapBack = true
+  ) => {
     endPan();
-    onPanEnd?.(...args);
-    onInteractionEnded();
+    onPanEnd?.(event, success);
+    onInteractionEnded(shouldSnapBack);
   };
 
   const handlePanStart = (
@@ -231,9 +236,20 @@ export const useGestures = ({
   ) => {
     'worklet';
     if (scale.value <= 1 || !isDoubleTapEnabled) {
-      scheduleOnRN(onPanEnded, event, success);
+      scheduleOnRN(onPanEnded, event, success, true);
       return;
     }
+    let pendingDecays = 2;
+    let wasInterrupted = false;
+    const onDecayEnd = (finished?: boolean) => {
+      if (!finished) {
+        wasInterrupted = true;
+      }
+      pendingDecays -= 1;
+      if (pendingDecays === 0) {
+        scheduleOnRN(onPanEnded, event, success, !wasInterrupted);
+      }
+    };
     const { left, right, top, bottom } = getLimits(width, height, scale);
     translate.x.value = withDecay(
       {
@@ -243,11 +259,7 @@ export const useGestures = ({
         rubberBandFactor: 0.9,
         clamp: [left - focal.x.value, right - focal.x.value],
       },
-      () => {
-        if (event.velocityX >= event.velocityY) {
-          scheduleOnRN(onPanEnded, event, success);
-        }
-      }
+      onDecayEnd
     );
     translate.y.value = withDecay(
       {
@@ -257,11 +269,7 @@ export const useGestures = ({
         rubberBandFactor: 0.9,
         clamp: [top - focal.y.value, bottom - focal.y.value],
       },
-      () => {
-        if (event.velocityY > event.velocityX) {
-          scheduleOnRN(onPanEnded, event, success);
-        }
-      }
+      onDecayEnd
     );
   };
 

@@ -3,18 +3,16 @@
     "name": "example",
     "slug": "example",
     "version": "1.0.0",
-    "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.likashefqet.example",
+      "appleTeamId": "7H34VRU28Q"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,6 +22,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "experiments": {
+      "onDemandFilesystem": "UNSTABLE_ALLOW_ALL"
     }
   }
 }

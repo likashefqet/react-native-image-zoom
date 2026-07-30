@@ -2,13 +2,13 @@ import { useCallback, useRef } from 'react';
 import { Gesture } from 'react-native-gesture-handler';
 import {
   Easing,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withDecay,
   withTiming,
   WithTimingConfig,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import { clamp } from '../utils/clamp';
 import { limits } from '../utils/limits';
 import { ANIMATION_VALUE, ZOOM_TYPE } from '../types';
@@ -22,7 +22,6 @@ import type {
   ZoomableUseGesturesProps,
 } from '../types';
 import { useAnimationEnd } from './useAnimationEnd';
-import { useInteractionId } from './useInteractionId';
 import { usePanGestureCount } from './usePanGestureCount';
 import { sum } from '../utils/sum';
 
@@ -67,22 +66,18 @@ export const useGestures = ({
   const savedTranslate = { x: useSharedValue(0), y: useSharedValue(0) };
   const translate = { x: useSharedValue(0), y: useSharedValue(0) };
 
-  const { getInteractionId, updateInteractionId } = useInteractionId();
   const { onAnimationEnd } = useAnimationEnd(onResetAnimationEnd);
+  const lastResetId = useSharedValue(0);
 
   const reset = useCallback(() => {
     'worklet';
-    const interactionId = getInteractionId();
+    const resetId = lastResetId.value + 1;
+    lastResetId.value = resetId;
 
     savedScale.value = 1;
     const lastScaleValue = scale.value;
     scale.value = withTiming(1, withTimingConfig, (...args) =>
-      onAnimationEnd(
-        interactionId,
-        ANIMATION_VALUE.SCALE,
-        lastScaleValue,
-        ...args
-      )
+      onAnimationEnd(resetId, ANIMATION_VALUE.SCALE, lastScaleValue, ...args)
     );
     initialFocal.x.value = 0;
     initialFocal.y.value = 0;
@@ -90,28 +85,18 @@ export const useGestures = ({
     savedFocal.y.value = 0;
     const lastFocalXValue = focal.x.value;
     focal.x.value = withTiming(0, withTimingConfig, (...args) =>
-      onAnimationEnd(
-        interactionId,
-        ANIMATION_VALUE.FOCAL_X,
-        lastFocalXValue,
-        ...args
-      )
+      onAnimationEnd(resetId, ANIMATION_VALUE.FOCAL_X, lastFocalXValue, ...args)
     );
     const lastFocalYValue = focal.y.value;
     focal.y.value = withTiming(0, withTimingConfig, (...args) =>
-      onAnimationEnd(
-        interactionId,
-        ANIMATION_VALUE.FOCAL_Y,
-        lastFocalYValue,
-        ...args
-      )
+      onAnimationEnd(resetId, ANIMATION_VALUE.FOCAL_Y, lastFocalYValue, ...args)
     );
     savedTranslate.x.value = 0;
     savedTranslate.y.value = 0;
     const lastTranslateXValue = translate.x.value;
     translate.x.value = withTiming(0, withTimingConfig, (...args) =>
       onAnimationEnd(
-        interactionId,
+        resetId,
         ANIMATION_VALUE.TRANSLATE_X,
         lastTranslateXValue,
         ...args
@@ -120,7 +105,7 @@ export const useGestures = ({
     const lastTranslateYValue = translate.y.value;
     translate.y.value = withTiming(0, withTimingConfig, (...args) =>
       onAnimationEnd(
-        interactionId,
+        resetId,
         ANIMATION_VALUE.TRANSLATE_Y,
         lastTranslateYValue,
         ...args
@@ -139,7 +124,7 @@ export const useGestures = ({
     savedTranslate.y,
     translate.x,
     translate.y,
-    getInteractionId,
+    lastResetId,
     onAnimationEnd,
   ]);
 
@@ -176,7 +161,7 @@ export const useGestures = ({
   const zoom: ProgrammaticZoomCallback = (event) => {
     'worklet';
     if (event.scale > 1) {
-      runOnJS(onProgrammaticZoom)(ZOOM_TYPE.ZOOM_IN);
+      scheduleOnRN(onProgrammaticZoom, ZOOM_TYPE.ZOOM_IN);
       scale.value = withTiming(event.scale, withTimingConfig);
       focal.x.value = withTiming(
         (center.x - event.x) * (event.scale - 1),
@@ -187,7 +172,7 @@ export const useGestures = ({
         withTimingConfig
       );
     } else {
-      runOnJS(onProgrammaticZoom)(ZOOM_TYPE.ZOOM_OUT);
+      scheduleOnRN(onProgrammaticZoom, ZOOM_TYPE.ZOOM_OUT);
       reset();
     }
   };
@@ -196,7 +181,6 @@ export const useGestures = ({
     if (!isInteracting.current) {
       isInteracting.current = true;
       onInteractionStart?.();
-      updateInteractionId();
     }
   };
 
@@ -243,7 +227,7 @@ export const useGestures = ({
     .minPointers(2)
     .maxPointers(maxPanPointers)
     .onStart((event) => {
-      runOnJS(onPanStarted)(event);
+      scheduleOnRN(onPanStarted, event);
       savedTranslate.x.value = translate.x.value;
       savedTranslate.y.value = translate.y.value;
     })
@@ -268,7 +252,7 @@ export const useGestures = ({
           },
           () => {
             if (event.velocityX >= event.velocityY) {
-              runOnJS(onPanEnded)(event, success);
+              scheduleOnRN(onPanEnded, event, success);
             }
           }
         );
@@ -282,12 +266,12 @@ export const useGestures = ({
           },
           () => {
             if (event.velocityY > event.velocityX) {
-              runOnJS(onPanEnded)(event, success);
+              scheduleOnRN(onPanEnded, event, success);
             }
           }
         );
       } else {
-        runOnJS(onPanEnded)(event, success);
+        scheduleOnRN(onPanEnded, event, success);
       }
     });
 
@@ -303,7 +287,7 @@ export const useGestures = ({
       }
     })
     .onStart((event) => {
-      runOnJS(onPanStarted)(event);
+      scheduleOnRN(onPanStarted, event);
       savedTranslate.x.value = translate.x.value;
       savedTranslate.y.value = translate.y.value;
     })
@@ -328,7 +312,7 @@ export const useGestures = ({
           },
           () => {
             if (event.velocityX >= event.velocityY) {
-              runOnJS(onPanEnded)(event, success);
+              scheduleOnRN(onPanEnded, event, success);
             }
           }
         );
@@ -342,19 +326,19 @@ export const useGestures = ({
           },
           () => {
             if (event.velocityY > event.velocityX) {
-              runOnJS(onPanEnded)(event, success);
+              scheduleOnRN(onPanEnded, event, success);
             }
           }
         );
       } else {
-        runOnJS(onPanEnded)(event, success);
+        scheduleOnRN(onPanEnded, event, success);
       }
     });
 
   const pinchGesture = Gesture.Pinch()
     .enabled(isPinchEnabled)
     .onStart((event) => {
-      runOnJS(onPinchStarted)(event);
+      scheduleOnRN(onPinchStarted, event);
       savedScale.value = scale.value;
       savedFocal.x.value = focal.x.value;
       savedFocal.y.value = focal.y.value;
@@ -371,7 +355,7 @@ export const useGestures = ({
         (center.y - initialFocal.y.value) * (scale.value - savedScale.value);
     })
     .onEnd((...args) => {
-      runOnJS(onPinchEnded)(...args);
+      scheduleOnRN(onPinchEnded, ...args);
     });
 
   const doubleTapGesture = Gesture.Tap()
@@ -380,7 +364,7 @@ export const useGestures = ({
     .maxDuration(250)
     .onStart((event) => {
       if (scale.value === 1) {
-        runOnJS(onDoubleTap)(ZOOM_TYPE.ZOOM_IN);
+        scheduleOnRN(onDoubleTap, ZOOM_TYPE.ZOOM_IN);
         scale.value = withTiming(doubleTapScale, withTimingConfig);
         focal.x.value = withTiming(
           (center.x - event.x) * (doubleTapScale - 1),
@@ -391,7 +375,7 @@ export const useGestures = ({
           withTimingConfig
         );
       } else {
-        runOnJS(onDoubleTap)(ZOOM_TYPE.ZOOM_OUT);
+        scheduleOnRN(onDoubleTap, ZOOM_TYPE.ZOOM_OUT);
         reset();
       }
     });
@@ -401,7 +385,7 @@ export const useGestures = ({
     .numberOfTaps(1)
     .maxDistance(24)
     .onStart((event) => {
-      runOnJS(onSingleTap)(event);
+      scheduleOnRN(onSingleTap, event);
     });
 
   const animatedStyle = useAnimatedStyle(

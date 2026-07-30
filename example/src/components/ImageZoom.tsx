@@ -1,8 +1,4 @@
-import React, {
-  ForwardRefRenderFunction,
-  ForwardedRef,
-  forwardRef,
-} from 'react';
+import React, { ForwardRefRenderFunction, forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { FadeIn, FadeOut, Layout, SharedValue } from 'react-native-reanimated';
 import {
@@ -10,7 +6,7 @@ import {
   ZOOM_TYPE,
   ImageZoomRef,
   ImageZoomProps,
-} from '../../../src';
+} from '../../../src/index';
 
 const styles = StyleSheet.create({
   image: { flex: 1 },
@@ -21,7 +17,6 @@ type Props = {
   scale?: SharedValue<number>;
   minScale?: number;
   maxScale?: number;
-  ref: ForwardedRef<ImageZoomRef>;
   setIsZoomed: (value: boolean) => void;
   style?: ImageZoomProps['style'];
 };

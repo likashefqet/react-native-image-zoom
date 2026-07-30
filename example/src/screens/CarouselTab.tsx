@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
-  interpolate,
   interpolateColor,
   useAnimatedStyle,
+  type SharedValue,
 } from 'react-native-reanimated';
-import Carousel from 'react-native-reanimated-carousel';
+import { Carousel } from 'react-native-reanimated-carousel';
 import ImageZoom from '../components/ImageZoom';
 import { COLORS } from '../themes/colors';
 
@@ -24,7 +24,7 @@ const data = IMAGE_URLS;
 
 interface ItemProps {
   index: number;
-  animationValue: Animated.SharedValue<number>;
+  animationValue: SharedValue<number>;
   setIsZoomed: (value: boolean) => void;
 }
 
@@ -59,43 +59,26 @@ const CustomItem: React.FC<ItemProps> = ({
   );
 };
 export const CarouselTab = () => {
-  const { width } = useWindowDimensions();
   const [isZoomed, setIsZoomed] = React.useState(false);
-  const customAnimation = React.useCallback(
-    (value: number) => {
-      'worklet';
-
-      const zIndex = interpolate(value, [-1, 0, 1], [10, 20, 30]);
-      const translateX = interpolate(value, [-2, 0, 1], [-width, 0, width]);
-
-      return {
-        transform: [{ translateX }],
-        zIndex,
-      };
-    },
-    [width]
-  );
 
   return (
     <Carousel
       loop={true}
-      // autoPlay={!isZoomed}
+      // autoplay={!isZoomed}
       style={styles.container}
-      width={width}
       data={data}
-      renderItem={({ index, animationValue }) => {
+      renderItem={({ index, relativeProgress }) => {
         return (
           <CustomItem
             key={index}
             index={index}
-            animationValue={animationValue}
+            animationValue={relativeProgress}
             setIsZoomed={setIsZoomed}
           />
         );
       }}
-      customAnimation={customAnimation}
-      scrollAnimationDuration={1200}
-      enabled={!isZoomed}
+      animation={{ type: 'timing', duration: 1200 }}
+      scrollEnabled={!isZoomed}
     />
   );
 };

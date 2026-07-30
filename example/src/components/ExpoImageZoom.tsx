@@ -1,8 +1,4 @@
-import React, {
-  ForwardRefRenderFunction,
-  ForwardedRef,
-  forwardRef,
-} from 'react';
+import React, { ForwardRefRenderFunction, forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
   FadeIn,
@@ -11,7 +7,12 @@ import Animated, {
   SharedValue,
 } from 'react-native-reanimated';
 import { Image } from 'expo-image';
-import { ZOOM_TYPE, Zoomable, ZoomableProps, ZoomableRef } from '../../../src';
+import {
+  ZOOM_TYPE,
+  Zoomable,
+  ZoomableProps,
+  ZoomableRef,
+} from '../../../src/index';
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
@@ -27,7 +28,6 @@ type Props = {
   scale?: SharedValue<number>;
   minScale?: number;
   maxScale?: number;
-  ref: ForwardedRef<ZoomableRef>;
   setIsZoomed: (value: boolean) => void;
   style?: ZoomableProps['style'];
 };

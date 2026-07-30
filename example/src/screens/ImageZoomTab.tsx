@@ -8,7 +8,7 @@ import Animated, {
   Layout,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ImageZoomRef } from '../../../src';
+import { ImageZoomRef } from '../../../src/index';
 import { AnimatedCircle } from '../components/AnimatedCircle';
 import ImageZoom from '../components/ImageZoom';
 import { COLORS } from '../themes/colors';

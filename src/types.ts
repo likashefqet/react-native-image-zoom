@@ -13,7 +13,7 @@ import type {
 } from 'react-native-gesture-handler';
 import {
   AnimatableValue,
-  AnimateProps,
+  AnimatedProps,
   SharedValue,
 } from 'react-native-reanimated';
 
@@ -191,7 +191,7 @@ export type ZoomProps = {
   onResetAnimationEnd?: OnResetAnimationEndCallback;
 };
 
-export type ZoomableProps = AnimateProps<ViewProps> & ZoomProps;
+export type ZoomableProps = AnimatedProps<ViewProps> & ZoomProps;
 
 export type UseZoomableProps = ZoomProps & {
   ref: ForwardedRef<ZoomableRef>;
@@ -203,7 +203,7 @@ export type UseZoomableProps = ZoomProps & {
   onLayout?: ZoomableProps['onLayout'];
 };
 
-export type ImageZoomProps = Omit<AnimateProps<ImageProps>, 'source'> &
+export type ImageZoomProps = Omit<AnimatedProps<ImageProps>, 'source'> &
   ZoomProps & {
     /**
      * The image's URI, which can be overridden by the `source` prop.

@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
     "paths": {
       "@likashefqet/react-native-image-zoom": [
         "./src/index"
@@ -15,7 +14,7 @@
       "esnext"
     ],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
@@ -26,6 +25,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
+    "types": ["jest"],
     "target": "esnext",
   },
 }

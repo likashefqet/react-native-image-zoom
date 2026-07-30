@@ -2,20 +2,15 @@ import { useCallback } from 'react';
 import {
   AnimatableValue,
   AnimationCallback,
-  runOnJS,
   useSharedValue,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import { ANIMATION_VALUE, type OnResetAnimationEndCallback } from '../types';
 
 export type OnAnimationEndCallback = AnimationCallback extends (
   ...a: infer I
 ) => infer O
-  ? (
-      interactionId: string,
-      value: ANIMATION_VALUE,
-      lastValue: number,
-      ...a: I
-    ) => O
+  ? (resetId: number, value: ANIMATION_VALUE, lastValue: number, ...a: I) => O
   : never;
 
 type EndValues = Record<
@@ -27,7 +22,7 @@ type EndValues = Record<
   }
 >;
 type PartialEndValues = Partial<EndValues>;
-type InteractionEndValues = Record<string, PartialEndValues>;
+type ResetEndValues = Record<number, PartialEndValues>;
 
 const ANIMATION_VALUES = [
   ANIMATION_VALUE.SCALE,
@@ -47,23 +42,26 @@ const isAnimationComplete = (
 export const useAnimationEnd = (
   onResetAnimationEnd?: OnResetAnimationEndCallback
 ) => {
-  const endValues = useSharedValue<InteractionEndValues>({});
+  const endValues = useSharedValue<ResetEndValues>({});
 
   const onAnimationEnd: OnAnimationEndCallback = useCallback(
-    (interactionId, value, lastValue, finished, current) => {
+    (resetId, value, lastValue, finished, current) => {
       'worklet';
-      if (onResetAnimationEnd) {
-        const currentEndValues = endValues.value[interactionId] || {};
-        currentEndValues[value] = { lastValue, finished, current };
-        if (isAnimationComplete(currentEndValues)) {
-          const completed = !Object.values(currentEndValues).some(
-            (item) => !item.finished
-          );
-          runOnJS(onResetAnimationEnd)(completed, currentEndValues);
-          delete endValues.value[interactionId];
-        } else {
-          endValues.value[interactionId] = currentEndValues;
-        }
+      if (!onResetAnimationEnd) {
+        return;
+      }
+      const currentEndValues: PartialEndValues = {
+        ...endValues.value[resetId],
+        [value]: { lastValue, finished, current },
+      };
+      if (isAnimationComplete(currentEndValues)) {
+        const completed = ANIMATION_VALUES.every(
+          (item) => currentEndValues[item].finished
+        );
+        scheduleOnRN(onResetAnimationEnd, completed, currentEndValues);
+        endValues.value = {};
+      } else {
+        endValues.value = { ...endValues.value, [resetId]: currentEndValues };
       }
     },
     [onResetAnimationEnd, endValues]

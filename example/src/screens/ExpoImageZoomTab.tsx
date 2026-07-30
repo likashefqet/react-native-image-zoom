@@ -8,7 +8,7 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ZoomableRef } from '../../../src';
+import { ZoomableRef } from '../../../src/index';
 import { AnimatedCircle } from '../components/AnimatedCircle';
 import ExpoImageZoom from '../components/ExpoImageZoom';
 import { COLORS } from '../themes/colors';

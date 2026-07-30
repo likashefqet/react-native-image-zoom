@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View, ViewProps } from 'react-native';
 import Animated, {
-  AnimateProps,
+  AnimatedProps,
   SharedValue,
   useAnimatedProps,
   useDerivedValue,
@@ -14,7 +14,7 @@ import { COLORS } from '../themes/colors';
 const AnimatedSvgCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedView = Animated.createAnimatedComponent(View);
 
-type AnimatedCircleProps = AnimateProps<ViewProps> & {
+type AnimatedCircleProps = AnimatedProps<ViewProps> & {
   scale: SharedValue<number>;
   minScale: number;
   maxScale: number;

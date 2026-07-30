@@ -1,7 +1,13 @@
 import { useCallback, useRef } from 'react';
 import { Gesture } from 'react-native-gesture-handler';
+import type {
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
+  PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
 import {
   Easing,
+  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withDecay,
@@ -10,7 +16,7 @@ import {
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { clamp } from '../utils/clamp';
-import { limits } from '../utils/limits';
+import { getLimits } from '../utils/limits';
 import { ANIMATION_VALUE, ZOOM_TYPE } from '../types';
 import type {
   GetInfoCallback,
@@ -23,7 +29,6 @@ import type {
 } from '../types';
 import { useAnimationEnd } from './useAnimationEnd';
 import { usePanGestureCount } from './usePanGestureCount';
-import { sum } from '../utils/sum';
 
 const withTimingConfig: WithTimingConfig = {
   easing: Easing.inOut(Easing.quad),
@@ -74,43 +79,29 @@ export const useGestures = ({
     const resetId = lastResetId.value + 1;
     lastResetId.value = resetId;
 
+    const animateReset = (
+      value: SharedValue<number>,
+      key: ANIMATION_VALUE,
+      toValue: number
+    ) => {
+      const lastValue = value.value;
+      value.value = withTiming(toValue, withTimingConfig, (...args) =>
+        onAnimationEnd(resetId, key, lastValue, ...args)
+      );
+    };
+
     savedScale.value = 1;
-    const lastScaleValue = scale.value;
-    scale.value = withTiming(1, withTimingConfig, (...args) =>
-      onAnimationEnd(resetId, ANIMATION_VALUE.SCALE, lastScaleValue, ...args)
-    );
     initialFocal.x.value = 0;
     initialFocal.y.value = 0;
     savedFocal.x.value = 0;
     savedFocal.y.value = 0;
-    const lastFocalXValue = focal.x.value;
-    focal.x.value = withTiming(0, withTimingConfig, (...args) =>
-      onAnimationEnd(resetId, ANIMATION_VALUE.FOCAL_X, lastFocalXValue, ...args)
-    );
-    const lastFocalYValue = focal.y.value;
-    focal.y.value = withTiming(0, withTimingConfig, (...args) =>
-      onAnimationEnd(resetId, ANIMATION_VALUE.FOCAL_Y, lastFocalYValue, ...args)
-    );
     savedTranslate.x.value = 0;
     savedTranslate.y.value = 0;
-    const lastTranslateXValue = translate.x.value;
-    translate.x.value = withTiming(0, withTimingConfig, (...args) =>
-      onAnimationEnd(
-        resetId,
-        ANIMATION_VALUE.TRANSLATE_X,
-        lastTranslateXValue,
-        ...args
-      )
-    );
-    const lastTranslateYValue = translate.y.value;
-    translate.y.value = withTiming(0, withTimingConfig, (...args) =>
-      onAnimationEnd(
-        resetId,
-        ANIMATION_VALUE.TRANSLATE_Y,
-        lastTranslateYValue,
-        ...args
-      )
-    );
+    animateReset(scale, ANIMATION_VALUE.SCALE, 1);
+    animateReset(focal.x, ANIMATION_VALUE.FOCAL_X, 0);
+    animateReset(focal.y, ANIMATION_VALUE.FOCAL_Y, 0);
+    animateReset(translate.x, ANIMATION_VALUE.TRANSLATE_X, 0);
+    animateReset(translate.y, ANIMATION_VALUE.TRANSLATE_Y, 0);
   }, [
     savedScale,
     scale,
@@ -130,31 +121,28 @@ export const useGestures = ({
 
   const moveIntoView = () => {
     'worklet';
-    if (scale.value > 1) {
-      const rightLimit = limits.right(width, scale);
-      const leftLimit = -rightLimit;
-      const bottomLimit = limits.bottom(height, scale);
-      const topLimit = -bottomLimit;
-      const totalTranslateX = sum(translate.x, focal.x);
-      const totalTranslateY = sum(translate.y, focal.y);
-
-      if (totalTranslateX > rightLimit) {
-        translate.x.value = withTiming(rightLimit, withTimingConfig);
-        focal.x.value = withTiming(0, withTimingConfig);
-      } else if (totalTranslateX < leftLimit) {
-        translate.x.value = withTiming(leftLimit, withTimingConfig);
-        focal.x.value = withTiming(0, withTimingConfig);
-      }
-
-      if (totalTranslateY > bottomLimit) {
-        translate.y.value = withTiming(bottomLimit, withTimingConfig);
-        focal.y.value = withTiming(0, withTimingConfig);
-      } else if (totalTranslateY < topLimit) {
-        translate.y.value = withTiming(topLimit, withTimingConfig);
-        focal.y.value = withTiming(0, withTimingConfig);
-      }
-    } else {
+    if (scale.value <= 1) {
       reset();
+      return;
+    }
+    const { left, right, top, bottom } = getLimits(width, height, scale);
+    const totalTranslateX = translate.x.value + focal.x.value;
+    const totalTranslateY = translate.y.value + focal.y.value;
+
+    if (totalTranslateX > right) {
+      translate.x.value = withTiming(right, withTimingConfig);
+      focal.x.value = withTiming(0, withTimingConfig);
+    } else if (totalTranslateX < left) {
+      translate.x.value = withTiming(left, withTimingConfig);
+      focal.x.value = withTiming(0, withTimingConfig);
+    }
+
+    if (totalTranslateY > bottom) {
+      translate.y.value = withTiming(bottom, withTimingConfig);
+      focal.y.value = withTiming(0, withTimingConfig);
+    } else if (totalTranslateY < top) {
+      translate.y.value = withTiming(top, withTimingConfig);
+      focal.y.value = withTiming(0, withTimingConfig);
     }
   };
 
@@ -220,60 +208,72 @@ export const useGestures = ({
     onInteractionEnded();
   };
 
+  const handlePanStart = (
+    event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
+  ) => {
+    'worklet';
+    scheduleOnRN(onPanStarted, event);
+    savedTranslate.x.value = translate.x.value;
+    savedTranslate.y.value = translate.y.value;
+  };
+
+  const handlePanUpdate = (
+    event: GestureUpdateEvent<PanGestureHandlerEventPayload>
+  ) => {
+    'worklet';
+    translate.x.value = savedTranslate.x.value + event.translationX;
+    translate.y.value = savedTranslate.y.value + event.translationY;
+  };
+
+  const handlePanEnd = (
+    event: GestureStateChangeEvent<PanGestureHandlerEventPayload>,
+    success: boolean
+  ) => {
+    'worklet';
+    if (scale.value <= 1 || !isDoubleTapEnabled) {
+      scheduleOnRN(onPanEnded, event, success);
+      return;
+    }
+    const { left, right, top, bottom } = getLimits(width, height, scale);
+    translate.x.value = withDecay(
+      {
+        velocity: event.velocityX,
+        velocityFactor: 0.6,
+        rubberBandEffect: true,
+        rubberBandFactor: 0.9,
+        clamp: [left - focal.x.value, right - focal.x.value],
+      },
+      () => {
+        if (event.velocityX >= event.velocityY) {
+          scheduleOnRN(onPanEnded, event, success);
+        }
+      }
+    );
+    translate.y.value = withDecay(
+      {
+        velocity: event.velocityY,
+        velocityFactor: 0.6,
+        rubberBandEffect: true,
+        rubberBandFactor: 0.9,
+        clamp: [top - focal.y.value, bottom - focal.y.value],
+      },
+      () => {
+        if (event.velocityY > event.velocityX) {
+          scheduleOnRN(onPanEnded, event, success);
+        }
+      }
+    );
+  };
+
   const panWhilePinchingGesture = Gesture.Pan()
     .enabled(isPanEnabled)
     .averageTouches(true)
     .enableTrackpadTwoFingerGesture(true)
     .minPointers(2)
     .maxPointers(maxPanPointers)
-    .onStart((event) => {
-      scheduleOnRN(onPanStarted, event);
-      savedTranslate.x.value = translate.x.value;
-      savedTranslate.y.value = translate.y.value;
-    })
-    .onUpdate((event) => {
-      translate.x.value = savedTranslate.x.value + event.translationX;
-      translate.y.value = savedTranslate.y.value + event.translationY;
-    })
-    .onEnd((event, success) => {
-      const rightLimit = limits.right(width, scale);
-      const leftLimit = -rightLimit;
-      const bottomLimit = limits.bottom(height, scale);
-      const topLimit = -bottomLimit;
-
-      if (scale.value > 1 && isDoubleTapEnabled) {
-        translate.x.value = withDecay(
-          {
-            velocity: event.velocityX,
-            velocityFactor: 0.6,
-            rubberBandEffect: true,
-            rubberBandFactor: 0.9,
-            clamp: [leftLimit - focal.x.value, rightLimit - focal.x.value],
-          },
-          () => {
-            if (event.velocityX >= event.velocityY) {
-              scheduleOnRN(onPanEnded, event, success);
-            }
-          }
-        );
-        translate.y.value = withDecay(
-          {
-            velocity: event.velocityY,
-            velocityFactor: 0.6,
-            rubberBandEffect: true,
-            rubberBandFactor: 0.9,
-            clamp: [topLimit - focal.y.value, bottomLimit - focal.y.value],
-          },
-          () => {
-            if (event.velocityY > event.velocityX) {
-              scheduleOnRN(onPanEnded, event, success);
-            }
-          }
-        );
-      } else {
-        scheduleOnRN(onPanEnded, event, success);
-      }
-    });
+    .onStart(handlePanStart)
+    .onUpdate(handlePanUpdate)
+    .onEnd(handlePanEnd);
 
   const panOnlyGesture = Gesture.Pan()
     .enabled(isPanEnabled)
@@ -286,54 +286,9 @@ export const useGestures = ({
         manager.fail();
       }
     })
-    .onStart((event) => {
-      scheduleOnRN(onPanStarted, event);
-      savedTranslate.x.value = translate.x.value;
-      savedTranslate.y.value = translate.y.value;
-    })
-    .onUpdate((event) => {
-      translate.x.value = savedTranslate.x.value + event.translationX;
-      translate.y.value = savedTranslate.y.value + event.translationY;
-    })
-    .onEnd((event, success) => {
-      const rightLimit = limits.right(width, scale);
-      const leftLimit = -rightLimit;
-      const bottomLimit = limits.bottom(height, scale);
-      const topLimit = -bottomLimit;
-
-      if (scale.value > 1 && isDoubleTapEnabled) {
-        translate.x.value = withDecay(
-          {
-            velocity: event.velocityX,
-            velocityFactor: 0.6,
-            rubberBandEffect: true,
-            rubberBandFactor: 0.9,
-            clamp: [leftLimit - focal.x.value, rightLimit - focal.x.value],
-          },
-          () => {
-            if (event.velocityX >= event.velocityY) {
-              scheduleOnRN(onPanEnded, event, success);
-            }
-          }
-        );
-        translate.y.value = withDecay(
-          {
-            velocity: event.velocityY,
-            velocityFactor: 0.6,
-            rubberBandEffect: true,
-            rubberBandFactor: 0.9,
-            clamp: [topLimit - focal.y.value, bottomLimit - focal.y.value],
-          },
-          () => {
-            if (event.velocityY > event.velocityX) {
-              scheduleOnRN(onPanEnded, event, success);
-            }
-          }
-        );
-      } else {
-        scheduleOnRN(onPanEnded, event, success);
-      }
-    });
+    .onStart(handlePanStart)
+    .onUpdate(handlePanUpdate)
+    .onEnd(handlePanEnd);
 
   const pinchGesture = Gesture.Pinch()
     .enabled(isPinchEnabled)

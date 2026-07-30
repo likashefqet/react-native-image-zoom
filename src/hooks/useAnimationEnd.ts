@@ -1,17 +1,15 @@
 import { useCallback } from 'react';
-import {
-  AnimatableValue,
-  AnimationCallback,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { AnimatableValue, useSharedValue } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { ANIMATION_VALUE, type OnResetAnimationEndCallback } from '../types';
 
-export type OnAnimationEndCallback = AnimationCallback extends (
-  ...a: infer I
-) => infer O
-  ? (resetId: number, value: ANIMATION_VALUE, lastValue: number, ...a: I) => O
-  : never;
+export type OnAnimationEndCallback = (
+  resetId: number,
+  value: ANIMATION_VALUE,
+  lastValue: number,
+  finished?: boolean,
+  current?: AnimatableValue
+) => void;
 
 type EndValues = Record<
   ANIMATION_VALUE,

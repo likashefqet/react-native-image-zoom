@@ -3,29 +3,7 @@ import { useZoomableLayout } from '../hooks/useZoomableLayout';
 import { useZoomableHandle } from '../hooks/useZoomableHandle';
 import type { UseZoomableProps } from '../types';
 
-export const useZoomable = ({
-  minScale,
-  maxScale,
-  scale,
-  doubleTapScale,
-  maxPanPointers,
-  isPanEnabled,
-  isPinchEnabled,
-  isSingleTapEnabled,
-  isDoubleTapEnabled,
-  onInteractionStart,
-  onInteractionEnd,
-  onPinchStart,
-  onPinchEnd,
-  onPanStart,
-  onPanEnd,
-  onSingleTap,
-  onDoubleTap,
-  onProgrammaticZoom,
-  onResetAnimationEnd,
-  onLayout,
-  ref,
-}: UseZoomableProps) => {
+export const useZoomable = ({ onLayout, ref, ...props }: UseZoomableProps) => {
   const { width, height, center, onZoomableLayout } = useZoomableLayout({
     onLayout,
   });
@@ -33,25 +11,7 @@ export const useZoomable = ({
     width,
     height,
     center,
-    minScale,
-    maxScale,
-    scale,
-    doubleTapScale,
-    maxPanPointers,
-    isPanEnabled,
-    isPinchEnabled,
-    isSingleTapEnabled,
-    isDoubleTapEnabled,
-    onInteractionStart,
-    onInteractionEnd,
-    onPinchStart,
-    onPinchEnd,
-    onPanStart,
-    onPanEnd,
-    onSingleTap,
-    onDoubleTap,
-    onProgrammaticZoom,
-    onResetAnimationEnd,
+    ...props,
   });
   useZoomableHandle(ref, reset, zoom, getInfo);
 

@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Zoomable: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
+const ImageZoom: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
   {
     uri = '',
     minScale,
@@ -76,4 +76,4 @@ const Zoomable: ForwardRefRenderFunction<ImageZoomRef, ImageZoomProps> = (
   );
 };
 
-export default forwardRef(Zoomable);
+export default forwardRef(ImageZoom);

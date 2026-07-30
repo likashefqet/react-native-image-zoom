@@ -239,28 +239,7 @@ export type ZoomableUseGesturesProps = Pick<
   ZoomableLayoutState,
   'width' | 'height' | 'center'
 > &
-  Pick<
-    ZoomableProps,
-    | 'minScale'
-    | 'maxScale'
-    | 'scale'
-    | 'doubleTapScale'
-    | 'maxPanPointers'
-    | 'isPanEnabled'
-    | 'isPinchEnabled'
-    | 'isSingleTapEnabled'
-    | 'isDoubleTapEnabled'
-    | 'onInteractionStart'
-    | 'onInteractionEnd'
-    | 'onPinchStart'
-    | 'onPinchEnd'
-    | 'onPanStart'
-    | 'onPanEnd'
-    | 'onSingleTap'
-    | 'onDoubleTap'
-    | 'onProgrammaticZoom'
-    | 'onResetAnimationEnd'
-  >;
+  ZoomProps;
 
 export type ZoomableRef = {
   /**

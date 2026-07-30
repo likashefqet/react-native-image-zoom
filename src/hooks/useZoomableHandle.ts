@@ -11,19 +11,9 @@ export const useZoomableHandle = (
   zoom: ProgrammaticZoomCallback,
   getInfo: GetInfoCallback
 ) => {
-  useImperativeHandle(
-    ref,
-    (): ZoomableRef => ({
-      reset() {
-        reset();
-      },
-      zoom(event) {
-        zoom(event);
-      },
-      getInfo() {
-        return getInfo();
-      },
-    }),
-    [reset, zoom, getInfo]
-  );
+  useImperativeHandle(ref, (): ZoomableRef => ({ reset, zoom, getInfo }), [
+    reset,
+    zoom,
+    getInfo,
+  ]);
 };

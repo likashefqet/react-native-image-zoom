@@ -1,0 +1,148 @@
+{
+  "posts": [
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0001.jpg",
+      "title": "La Bourse at Golden Hour",
+      "tags": ["Street", "Architecture"],
+      "byline": "likashefqet · Brussels, Belgium · Apr 2024",
+      "exif": "iPhone · 120mm · f/2.8 · 1/101 · ISO 50",
+      "appreciations": "1.2k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0002.jpg",
+      "title": "Lightning Over the Trees",
+      "tags": ["Night", "Storm"],
+      "byline": "likashefqet · Graz, Austria · Aug 2024",
+      "exif": "iPhone · 24mm · f/1.8 · 1/15 · ISO 6400",
+      "appreciations": "2.3k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0003.jpg",
+      "title": "Granite Giants",
+      "tags": ["Travel"],
+      "byline": "likashefqet · Palau, Sardinia · Jun 2025",
+      "exif": "iPhone · 48mm · f/1.8 · 1/4310 · ISO 64",
+      "appreciations": "623"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0004.jpg",
+      "title": "Beach Bar from the Water",
+      "tags": ["Sea", "Travel"],
+      "byline": "likashefqet · Sardinia, Italy · Jun 2025",
+      "exif": "iPhone · 104mm · f/1.8 · 1/5848 · ISO 64",
+      "appreciations": "412"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0005.jpg",
+      "title": "Old Town Corner",
+      "tags": ["Street", "Travel"],
+      "byline": "likashefqet · Monopoli, Italy · Oct 2024",
+      "exif": "iPhone · 24mm · f/1.8 · 1/121 · ISO 64",
+      "appreciations": "1.1k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0006.jpg",
+      "title": "Sundown on the Reservoir",
+      "tags": ["Travel"],
+      "byline": "likashefqet · Kukës, Albania · Apr 2024",
+      "exif": "iPhone · 24mm · f/1.8 · 1/121 · ISO 100",
+      "appreciations": "1.4k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0007.jpg",
+      "title": "Mosaic After Dark",
+      "tags": ["Night", "Street"],
+      "byline": "likashefqet · Tirana, Albania · Apr 2024",
+      "exif": "iPhone · 120mm · f/2.8 · 1/33 · ISO 1250",
+      "appreciations": "2.1k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0008.jpg",
+      "title": "Cat Nap",
+      "tags": ["Pets"],
+      "byline": "likashefqet · Tirana, Albania · Oct 2024",
+      "exif": "iPhone · 24mm · f/1.8 · 1/60 · ISO 320",
+      "appreciations": "980"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0009.jpg",
+      "title": "BXL in Bloom",
+      "tags": ["Street", "Travel"],
+      "byline": "likashefqet · Brussels, Belgium · Apr 2024",
+      "exif": "iPhone · 24mm · f/1.8 · 1/121 · ISO 64",
+      "appreciations": "3.4k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0010.jpg",
+      "title": "Through the Colonnade",
+      "tags": ["Architecture", "Travel"],
+      "byline": "likashefqet · Brussels, Belgium · May 2024",
+      "exif": "iPhone · 48mm · f/1.8 · 1/162 · ISO 64",
+      "appreciations": "537"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0011.jpg",
+      "title": "The Cove from Above",
+      "tags": ["Sea", "Aerial"],
+      "byline": "likashefqet · Himarë, Albania · Aug 2025",
+      "exif": "DJI drone · 24mm · f/1.7 · 1/320 · ISO 110",
+      "appreciations": "5.2k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0012.jpg",
+      "title": "Storm Rolling In",
+      "tags": ["Night", "Storm"],
+      "byline": "likashefqet · Tirana, Albania · Jul 2026",
+      "exif": "iPhone · 24mm · f/1.8 · 1/5 · ISO 1000",
+      "appreciations": "1.8k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0013.jpg",
+      "title": "Moonrise at the Beach",
+      "tags": ["Moon", "Sea", "Night"],
+      "byline": "likashefqet · Himarë, Albania · Jul 2024",
+      "exif": "iPhone · 132mm · f/2.8 · 1/171 · ISO 50",
+      "appreciations": "1.5k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0014.jpg",
+      "title": "The Oculus",
+      "tags": ["Architecture"],
+      "byline": "likashefqet · Brussels, Belgium · Apr 2024",
+      "exif": "iPhone · 24mm · f/1.8 · 1/100 · ISO 64",
+      "appreciations": "719"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0015.jpg",
+      "title": "Winged Victories",
+      "tags": ["Travel"],
+      "byline": "likashefqet · Rome, Italy · Jun 2024",
+      "exif": "iPhone · 141mm · f/2.8 · 1/473 · ISO 50",
+      "appreciations": "891"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0016.jpg",
+      "title": "Moon in the Autumn Leaves",
+      "tags": ["Moon"],
+      "byline": "likashefqet · Besançon, France · Oct 2025",
+      "exif": "iPhone · 222mm · f/2.8 · 1/186 · ISO 50",
+      "appreciations": "764"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0017.jpg",
+      "title": "Armchair Critic",
+      "tags": ["Pets"],
+      "byline": "likashefqet · Himarë, Albania · Jul 2024",
+      "exif": "iPhone · 72mm · f/1.8 · 1/48 · ISO 250",
+      "appreciations": "1.3k"
+    },
+    {
+      "image": "https://raw.githubusercontent.com/likashefqet/react-native-image-zoom/main/example/assets/feed/IMG_0018.jpg",
+      "title": "Daytime Moon Downtown",
+      "tags": ["Moon", "Street"],
+      "byline": "likashefqet · Tirana, Albania · May 2025",
+      "exif": "iPhone · 112mm · f/1.8 · 1/2045 · ISO 64",
+      "appreciations": "2.9k"
+    }
+  ]
+}

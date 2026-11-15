@@ -1,4 +1,5 @@
 import { useCallback, useRef } from 'react';
+ import { Platform } from 'react-native';
 import { Gesture } from 'react-native-gesture-handler';
 import {
   Easing,
@@ -414,7 +415,9 @@ export const useGestures = ({
         { scale: scale.value },
       ],
     }),
-    [translate.x, translate.y, focal.x, focal.y, scale]
+    Platform.OS === 'web'
+      ? [translate.x, translate.y, focal.x, focal.y, scale]
+      : undefined
   );
 
   const getInfo: GetInfoCallback = () => {

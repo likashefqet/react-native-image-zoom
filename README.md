@@ -53,7 +53,7 @@ Photo by <a href="https://unsplash.com/photos/XLqiL-rz4V8" title="Photo by Walli
 
 - **Ref Handle:** Customize the functionality further by utilizing the exposed `reset` and `zoom` methods. The 'reset' method allows you to programmatically reset the image zoom as a side effect to another user action or event, in addition to the default double tap and pinch functionalities. The 'zoom' method allows you to programmatically zoom in the image to a given point (x, y) at a given scale level.
 
-- **Reanimated Compatibility**: Compatible with `Reanimated v2` & `Reanimated v3`, providing optimized performance and smoother animations during image manipulations`.
+- **Reanimated Compatibility**: Compatible with `Reanimated v2+`, including Reanimated v4, providing optimized performance and smoother animations during image manipulations.
 
 - **TypeScript Support:** Developed with `TypeScript` to enhance codebase maintainability and ensure type safety, reducing potential errors during development and refactoring processes
 
@@ -77,7 +77,14 @@ yarn add @likashefqet/react-native-image-zoom
 >
 > # 🚨
 >
-> ### Please note that this library is compatible with `Reanimated v2` & `Reanimated v3` and uses `GestureHandler v2`.
+> ### Compatibility
+>
+> This library supports `React Native >=0.62.x`, `Reanimated v2+`, and `Gesture Handler v2+`.
+> Reanimated has its own React Native and New Architecture compatibility requirements, especially for Reanimated v4. See the [Reanimated compatibility table](https://docs.swmansion.com/react-native-reanimated/docs/guides/compatibility/).
+>
+> ### Web support
+>
+> The component can be used with React Native Web when `react-native-gesture-handler` and Reanimated are configured for Web. If Reanimated is used on Web without the Babel/Worklets plugin, the library supplies the dependency list required by Reanimated. On native platforms, the dependency list is omitted to avoid warnings from newer Reanimated versions.
 >
 > ## If you haven't installed Reanimated and Gesture Handler yet, please follow the installation instructions for [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation) and [Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/).
 
